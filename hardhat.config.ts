@@ -3,12 +3,13 @@ import * as dotenv from "dotenv";
 import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
-import "hardhat-circom";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 
 dotenv.config();
+
+const { MNEMONIC = "test test test test test test test test test test test fake" } = process.env;
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -30,6 +31,30 @@ const config: HardhatUserConfig = {
       url: process.env.ROPSTEN_URL || "",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+    development: {
+      url: "http://127.0.0.1:8545",
+      accounts: {
+        mnemonic: MNEMONIC,
+        count: 10,
+      },
+    },
+    mumbai: {
+      url: "https://rpc-mumbai.maticvigil.com",
+      chainId: 80001,
+      accounts: {
+        mnemonic: MNEMONIC,
+        count: 10,
+        initialIndex: 3,
+      },
+    },
+    polygon: {
+      url: "https://rpc-mainnet.matic.today",
+      chainId: 137,
+      accounts: {
+        mnemonic: MNEMONIC,
+        count: 10,
+      },
     },
   },
   gasReporter: {
