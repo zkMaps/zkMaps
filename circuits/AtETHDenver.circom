@@ -7,18 +7,19 @@ template AtETHDenver() {
     // Your private coordinates
     signal input latitude;
     signal input longitude;
+    signal output o; // necessary to compile as per https://github.com/iden3/snarkjs/issues/116#issuecomment-1020352690
+    o <== 1;
 
     // Public definition of ethdenver
     // 4 city blocks, starting in the north east, going counter-clockwise
     // 12th and Lincoln
-    var northEastLatitude = 41; // 39.73547807205027
-    var northEastLongitude = -102; // -104.98613919370023
+    var northEastLatitude = 3973547807205027;
+    var northEastLongitude = -10498613919370023;
 
     // 10th and Lincoln
-    var southWestLatitude = 39; // 39.73227978507761
-    var southWestLongitude = -104; // -104.98612139274626
+    var southWestLatitude = 3973227978507761;
+    var southWestLongitude = -10498612139274626;
 
-    // TODO: is it possible to build the the LessThan comparator once?
     // latitude < northEastLatitude;
     component lt1 = LessThan(64);
     lt1.in[0] <== latitude;
