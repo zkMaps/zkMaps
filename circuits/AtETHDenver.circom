@@ -7,7 +7,7 @@ template AtETHDenver() {
     // Your private coordinates
     signal input latitude;
     signal input longitude;
-    signal output o; // necessary to compile
+    signal output o; // necessary to compile as per https://github.com/iden3/snarkjs/issues/116#issuecomment-1020352690
     o <== 1;
 
     // Public definition of ethdenver
@@ -22,8 +22,8 @@ template AtETHDenver() {
 
     // latitude < northEastLatitude;
     component lt1 = LessThan(64);
-    lt1.in[0] <== northEastLatitude;
-    lt1.in[1] <== latitude;
+    lt1.in[0] <== latitude;
+    lt1.in[1] <== northEastLatitude;
     lt1.out === 1;
 
     // // longitude < northEastLongitude;
