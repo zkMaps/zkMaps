@@ -9,7 +9,10 @@ import "solidity-coverage";
 
 dotenv.config();
 
-const { MNEMONIC = "test test test test test test test test test test test fake" } = process.env;
+const {
+  MNEMONIC = "test test test test test test test test test test test fake",
+  HARMONY_PRIVATE_KEY,
+} = process.env;
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -54,6 +57,24 @@ const config: HardhatUserConfig = {
       accounts: {
         mnemonic: MNEMONIC,
         count: 10,
+      },
+    },
+    harmonytest: {
+      url: `https://api.s0.b.hmny.io`,
+      chainId: 1666700000,
+      accounts: {
+        mnemonic: MNEMONIC,
+        count: 10,
+        initialIndex: 3,
+      },
+    },
+    harmony: {
+      url: `https://api.harmony.one`,
+      chainId: 1666600000,
+      accounts: {
+        mnemonic: MNEMONIC,
+        count: 10,
+        initialIndex: 3,
       },
     },
   },

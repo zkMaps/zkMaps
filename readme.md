@@ -31,6 +31,8 @@ steps: (https://docs.circom.io/getting-started/proving-circuits/)
 ## Contracts details
 - initial Verifier.sol deployedto polygon-mumabi: `0xa78c0253c7FB84b50ce1f6182397A9F320e3b47e` 
 - [mumbai polygon scan](https://mumbai.polygonscan.com/address/0xa78c0253c7FB84b50ce1f6182397A9F320e3b47e)
+- initial Verifier.sol deployedto harmony-testnet: `0x98e43b52bBde412FAA3af7316C52038929bc9Ab5` 
+- [harmony testnet scan](https://explorer.pops.one/address/0x98e43b52bbde412faa3af7316c52038929bc9ab5?activeTab=2)
 
 # Advanced Sample Hardhat Project
 
