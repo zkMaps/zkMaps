@@ -22,7 +22,9 @@ steps: (https://docs.circom.io/getting-started/proving-circuits/)
 14. `snarkjs zkey export solidityverifier init.zkey ../contracts/Verifier.sol`
 
 
-
+## Contracts details
+- initial Verifier.sol deployedto polygon-mumabi: `0xa78c0253c7FB84b50ce1f6182397A9F320e3b47e` 
+- [mumbai polygon scan](https://mumbai.polygonscan.com/address/0xa78c0253c7FB84b50ce1f6182397A9F320e3b47e)
 
 # Advanced Sample Hardhat Project
 
