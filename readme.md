@@ -29,8 +29,8 @@ steps: (https://docs.circom.io/getting-started/proving-circuits/)
 
 
 ## Contracts details
-- initial Verifier.sol deployedto polygon-mumabi: `0xdaC3C84d280f34A16090A265932961C0b1375A83` 
-- [mumbai polygon scan](https://mumbai.polygonscan.com/address/0xdaC3C84d280f34A16090A265932961C0b1375A83)
+- initial Verifier.sol deployedto polygon-mumabi: `0x420edb0c08654eA0Deac07979697663db08E0548` 
+- [mumbai polygon scan](https://mumbai.polygonscan.com/address/0x420edb0c08654eA0Deac07979697663db08E0548)
 - initial Verifier.sol deployedto harmony-testnet: `0x801d67C424709428Ed0eCf5507ddA3040Cd84835` 
 - [harmony testnet scan](https://explorer.pops.one/address/0x801d67C424709428Ed0eCf5507ddA3040Cd84835?activeTab=2)
 
