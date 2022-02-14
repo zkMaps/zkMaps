@@ -1,6 +1,7 @@
 pragma circom 2.0.0;
 
 include "./dependencies/circomlib/comparators.circom";
+include "./location.circom";
 
 // This contract verifies that you're in denver
 template AtETHDenver() {
@@ -20,29 +21,13 @@ template AtETHDenver() {
     var southWestLatitude = 12973227978507761;
     var southWestLongitude = 7500977777251778;
 
-    // latitude < northEastLatitude;
-    component lt1 = LessThan(64);
-    lt1.in[0] <== latitude;
-    lt1.in[1] <== northEastLatitude;
-    lt1.out === 1;
-
-    // longitude < northEastLongitude;
-    component lt2 = LessThan(64);
-    lt2.in[0] <== longitude;
-    lt2.in[1] <== northEastLongitude;
-    lt2.out === 1;
-
-    // latitude > southWestLatitude;
-    component lt3 = LessThan(64);
-    lt3.in[0] <== southWestLatitude;
-    lt3.in[1] <== latitude;
-    lt3.out === 1;
-
-    // longitude > southWestLatitude;
-    component lt4 = LessThan(64);
-    lt4.in[0] <== southWestLongitude;
-    lt4.in[1] <== longitude;
-    lt4.out === 1;
+    component inLoc = AssertInLocation();
+    inLoc.maxLatitude <== northEastLatitude;
+    inLoc.maxLongitude <== northEastLongitude;
+    inLoc.minLatitude <== southWestLatitude;
+    inLoc.minLongitude <== southWestLongitude;
+    inLoc.latitude <== latitude;
+    inLoc.longitude <== longitude;
 }
 
 component main = AtETHDenver();
