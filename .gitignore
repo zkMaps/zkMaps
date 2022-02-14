@@ -9,3 +9,4 @@ cache
 artifacts
 
 circuits/.build
+.DS_Store
