@@ -2,7 +2,7 @@ pragma circom 2.0.0;
 
 // Utility functions for location based circuits
 
-// AssertInLocation accepts integerised coordinates for a bounding rect and a point
+// AssertInLocation accepts coordinates for a bounding rect and a point
 // and fails if the point is not within the bounding rect.
 template AssertInLocation() {
     signal input maxLatitude;
