@@ -9,11 +9,5 @@ cache
 artifacts
 
 circuits/.build
-<<<<<<< HEAD
 .DS_Store
 .DS_Store*
-=======
-
-#mac config
-.DS_Store
->>>>>>> 626a1e6 (update polygon address)
