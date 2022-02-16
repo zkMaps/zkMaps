@@ -14,7 +14,7 @@ circom "$1.circom" --r1cs --wasm --sym --c -o ".build/$1" || { echo 'compilation
 echo "Compilation successful"
 
 # Build the witness
-node "./.build/$1/$1_js/generate_witness.js" "./.build/$1/$1_js/$1.wasm" $2 "./.build/$1/witness.wtns" || { echo 'building the witness failed' ; exit 1; }
+node "./.build/$1/$1_js/generate_witness.js" "./.build/$1/$1_js/$1.wasm" "$1_input.json" "./.build/$1/witness.wtns" || { echo 'building the witness failed' ; exit 1; }
 echo "Witness built"
 
 # Build the proof

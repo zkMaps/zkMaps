@@ -1,8 +1,8 @@
 ## Using the build script
 
 1. `cd circuits`
-2. `./full_build.sh basic basic_input.input` to test the environment with a simple circuit
-3.  `./full_build.sh AtEthDenver AtEthDenver_input.json` to build the AtEthDenver circuit
+2. `./full_build.sh basic` to test the environment with a simple circuit
+3.  `./full_build.sh AtEthDenver` to build the AtEthDenver circuit
 
 ## Circom
 
