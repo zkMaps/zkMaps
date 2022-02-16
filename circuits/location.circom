@@ -1,6 +1,24 @@
 pragma circom 2.0.0;
 
+include "./dependencies/circomlib/comparators.circom";
+
 // Utility functions for location based circuits
+
+template AssertFixedLocation(maxLatitude, maxLongitude, minLatitude, minLongitude) {
+    signal input latitude;
+    signal input longitude;
+
+    signal output o; // necessary to compile as per https://github.com/iden3/snarkjs/issues/116#issuecomment-1020352690
+    o <== 1;
+
+    component a = AssertInLocation();
+    a.maxLatitude <== maxLatitude;
+    a.maxLongitude <== maxLongitude;
+    a.minLatitude <== minLatitude;
+    a.minLongitude <== minLongitude;
+    a.latitude <== latitude;
+    a.longitude <== longitude;
+}
 
 // AssertInLocation accepts coordinates for a bounding rect and a point
 // and fails if the point is not within the bounding rect.
