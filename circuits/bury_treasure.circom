@@ -34,18 +34,17 @@ template DropTreasure() {
 
     // Hash the treasure location
     component hash = Poseidon(2);
-
     hash.inputs[0] <== treasureLatitude;
     hash.inputs[1] <== treasureLongitude;
 
-    // Pass public inputs through the circuit
-    maxLatitudeOutput <-- maxLatitude;
-    maxLongitudeOutput <-- maxLongitude;
-    minLatitudeOutput <-- minLatitude;
-    minLongitudeOutput <-- minLongitude;
-
     // Output the hash
-    hashOutput <-- hash.out;
+    hashOutput <== hash.out;
+
+    // Pass public inputs through the circuit
+    maxLatitudeOutput <== maxLatitude;
+    maxLongitudeOutput <== maxLongitude;
+    minLatitudeOutput <== minLatitude;
+    minLongitudeOutput <== minLongitude;
 }
 
 component main = DropTreasure();
