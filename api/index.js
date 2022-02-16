@@ -1,5 +1,2 @@
-const express = require("express");
-const app = express();
-app.use(express.static("../circuits/.build"));
-
+const app = require("express")();
 module.exports = app;
