@@ -33,6 +33,8 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
+    "circom": "^0.5.46",
+    "circom1": "npm:circom@^0.5.46",
     "hardhat-circom": "^1.2.0"
   }
 }
