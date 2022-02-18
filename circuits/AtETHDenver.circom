@@ -1,5 +1,3 @@
-// pragma circom 2.0.0;
-
 include "./location.circom";
 
 // Public definition of ethdenver

@@ -1,5 +1,3 @@
-pragma circom 2.0.0;
-
 include "./location.circom";
 
 // Colorado is between 41N and 37N by latitude

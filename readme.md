@@ -81,3 +81,8 @@ npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
 
 For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
 
+# Formatting Coordinates
+
+There are no negative numbers in circom, so we add 90 to latitude and 180 to longitude, so that the numbers are between 0-180 for latitude, and 0-360 for longitude.
+There are no floats in circom either, but we have different precision requirements for AtEthDenver and InColorado, vs in the treasure hunt.
+For AtEthDenver/InColorado multiple by 10^14. For the treasure hunt multiply by 1000 and truncate the rest of the digits.
