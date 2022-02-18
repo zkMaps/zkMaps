@@ -12,8 +12,8 @@ template DropTreasure() {
     signal input minLongitude;
 
     // Private inputs
-    signal input treasureLatitude;
-    signal input treasureLongitude;
+    signal private input treasureLatitude;
+    signal private input treasureLongitude;
 
     // Outputs
     signal output maxLatitudeOutput;
