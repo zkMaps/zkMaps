@@ -89,4 +89,4 @@ For faster runs of your tests and scripts, consider skipping ts-node's type chec
 
 There are no negative numbers in circom, so we add 90 to latitude and 180 to longitude, so that the numbers are between 0-180 for latitude, and 0-360 for longitude.
 There are no floats in circom either, but we have different precision requirements for AtEthDenver and InColorado, vs in the treasure hunt.
-For AtEthDenver/InColorado multiple by 10^14. For the treasure hunt multiply by 1000 and truncate the rest of the digits.
+For AtEthDenver/InColorado multiply by 10^14. For the treasure hunt multiply by 1000 and truncate the rest of the digits.
