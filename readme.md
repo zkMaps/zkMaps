@@ -3,6 +3,7 @@
 1. `cd circuits`
 2. `./full_build.sh basic` to test the environment with a simple circuit
 3.  `./full_build.sh AtEthDenver` to build the AtEthDenver circuit
+4.  `./generate_proof.sh AtEthDenver` generate proof
 
 ## Circom
 
@@ -29,8 +30,8 @@ steps: (https://docs.circom.io/getting-started/proving-circuits/)
 
 
 ## Contracts details
-- initial Verifier.sol deployedto polygon-mumabi: `0x420edb0c08654eA0Deac07979697663db08E0548` 
-- [mumbai polygon scan](https://mumbai.polygonscan.com/address/0x420edb0c08654eA0Deac07979697663db08E0548)
+- **in Colorado** Verifier.sol deployedto polygon-mumabi: `0xed04EfA13516B6298Baf520F3520C8B70637fD60` 
+- [mumbai polygon scan](https://mumbai.polygonscan.com/address/0xed04EfA13516B6298Baf520F3520C8B70637fD60)
 - initial Verifier.sol deployedto harmony-testnet: `0x801d67C424709428Ed0eCf5507ddA3040Cd84835` 
 - [harmony testnet scan](https://explorer.pops.one/address/0x801d67C424709428Ed0eCf5507ddA3040Cd84835?activeTab=2)
 
