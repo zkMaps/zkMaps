@@ -15,13 +15,14 @@ echo "Compilation successful"
 
 # Build the witness
 # node "./.build/$1/$1_js/generate_witness.js" "./.build/$1/$1_js/$1.wasm" "$1_input.json" "./.build/$1/witness.wtns" || { echo 'building the witness failed' ; exit 1; }
-# echo "Witness built"
+snarkjs calculatewitness --wasm AtEthDenver.wasm --input AtETHDenver_input.json
+echo "Witness built"
 
 # Build the proof
 snarkjs powersoftau prepare phase2 ptau/pot12_0001.ptau ptau/pot12_final.ptau -v || { echo 'ptau failed' ; exit 1; }
 snarkjs groth16 setup "./$1.r1cs" ptau/pot12_final.ptau "./.build/$1/$1_0001.zkey" || { echo 'ptau failed' ; exit 1; }
 snarkjs zkey export verificationkey "./.build/$1/$1_0001.zkey" "./.build/$1/verification_key.json" || { echo 'ptau failed' ; exit 1; }
-# snarkjs groth16 prove "./.build/$1/$1_0001.zkey" "./.build/$1/witness.wtns" "./.build/$1/proof.json" "./.build/$1/public.json" || { echo 'proof generation failed' ; exit 1; }
+snarkjs groth16 prove "./.build/$1/$1_0001.zkey" "./.build/$1/witness.wtns" "./.build/$1/proof.json" "./.build/$1/public.json" || { echo 'proof generation failed' ; exit 1; }
 # echo "Proof built"
 snarkjs zkey export solidityverifier "./.build/$1/$1_0001.zkey" "../contracts/Verifier.sol" || { echo 'proof generation contract failed' ; exit 1; }
 echo "Verifier contract built"
