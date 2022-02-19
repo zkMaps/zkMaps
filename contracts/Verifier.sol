@@ -22,6 +22,7 @@ library Pairing {
         uint[2] X;
         uint[2] Y;
     }
+ 
     /// @return the generator of G1
     function P1() internal pure returns (G1Point memory) {
         return G1Point(1, 2);
@@ -175,6 +176,9 @@ contract Verifier {
         Pairing.G2Point B;
         Pairing.G1Point C;
     }
+
+    event LogVerified(address userAddress, uint256 indexed timestamp);
+
     function verifyingKey() internal pure returns (VerifyingKey memory vk) {
         vk.alfa1 = Pairing.G1Point(
             5741363035302961720749615118488422664300756350848876568662196788180627190936,
@@ -237,7 +241,7 @@ contract Verifier {
             uint[2][2] memory b,
             uint[2] memory c,
             uint[1] memory input
-        ) public view returns (bool r) {
+        ) public returns (bool r) {
         Proof memory proof;
         proof.A = Pairing.G1Point(a[0], a[1]);
         proof.B = Pairing.G2Point([b[0][0], b[0][1]], [b[1][0], b[1][1]]);
@@ -247,6 +251,8 @@ contract Verifier {
             inputValues[i] = input[i];
         }
         if (verify(inputValues, proof) == 0) {
+            // emit a verified address
+            emit LogVerified(msg.sender, block.timestamp);
             return true;
         } else {
             return false;
