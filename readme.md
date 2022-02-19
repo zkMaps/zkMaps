@@ -30,8 +30,8 @@ steps: (https://docs.circom.io/getting-started/proving-circuits/)
 
 
 ## Contracts details
-- **in Colorado** Verifier.sol deployedto polygon-mumabi: `0xed04EfA13516B6298Baf520F3520C8B70637fD60` 
-- [mumbai polygon scan](https://mumbai.polygonscan.com/address/0xed04EfA13516B6298Baf520F3520C8B70637fD60)
+- **in Colorado** Verifier.sol deployedto polygon-mumabi: `0xB5217d3E37F12F89138113534953E1b9583e4F3B` 
+- [mumbai polygon scan](https://mumbai.polygonscan.com/address/0xB5217d3E37F12F89138113534953E1b9583e4F3B)
 - initial Verifier.sol deployedto harmony-testnet: `0x801d67C424709428Ed0eCf5507ddA3040Cd84835` 
 - [harmony testnet scan](https://explorer.pops.one/address/0x801d67C424709428Ed0eCf5507ddA3040Cd84835?activeTab=2)
 
