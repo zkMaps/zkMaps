@@ -251,6 +251,7 @@ contract Verifier {
             inputValues[i] = input[i];
         }
         if (verify(inputValues, proof) == 0) {
+            // emit a verified address
             emit LogVerified(msg.sender, block.timestamp);
             return true;
         } else {

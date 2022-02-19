@@ -30,9 +30,11 @@ steps: (https://docs.circom.io/getting-started/proving-circuits/)
 
 
 ## Contracts details
-- **in Colorado** Verifier.sol deployedto polygon-mumabi: `0xB5217d3E37F12F89138113534953E1b9583e4F3B` 
+- **in Colorado** Verifier.sol deployed to eth-mainnet: `0x2c2b1601ccb2e2d40812de8168737cc44a63ed61` 
+- [mumbai polygon scan](https://mumbai.polygonscan.com/address/0x2c2b1601ccb2e2d40812de8168737cc44a63ed61)
+- **in Colorado** Verifier.sol deployed to polygon-mumabi: `0xB5217d3E37F12F89138113534953E1b9583e4F3B` 
 - [mumbai polygon scan](https://mumbai.polygonscan.com/address/0xB5217d3E37F12F89138113534953E1b9583e4F3B)
-- initial Verifier.sol deployedto harmony-testnet: `0x801d67C424709428Ed0eCf5507ddA3040Cd84835` 
+- initial Verifier.sol deployed to harmony-testnet: `0x801d67C424709428Ed0eCf5507ddA3040Cd84835` 
 - [harmony testnet scan](https://explorer.pops.one/address/0x801d67C424709428Ed0eCf5507ddA3040Cd84835?activeTab=2)
 
 ## api proof generation

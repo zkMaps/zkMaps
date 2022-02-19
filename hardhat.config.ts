@@ -11,6 +11,7 @@ dotenv.config();
 
 const {
   MNEMONIC = "test test test test test test test test test test test fake",
+  INFURA_MAINNET_KEY,
 } = process.env;
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -23,12 +24,21 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+const mainnetGwei = 84;
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
   solidity: "0.6.11",
   networks: {
+    mainnet: {
+      url: `https://mainnet.infura.io/v3/${INFURA_MAINNET_KEY}`, // <---- YOUR INFURA ID! (or it won't work)
+      //      url: "https://speedy-nodes-nyc.moralis.io/XXXXXXXXXXXXXXXXXXXXXXXXX/eth/mainnet", // <---- YOUR MORALIS ID! (not limited to infura)
+      gasPrice: mainnetGwei * 1000000000,
+      accounts: {
+        mnemonic: MNEMONIC,
+      },
+    },
     ropsten: {
       url: process.env.ROPSTEN_URL || "",
       accounts:
