@@ -1,3 +1,5 @@
+## Notion
+https://www.notion.so/4fb730fe3eab4c5193120e0964990e19?v=ba4ff15f168f46a5be9c04352db18827
 
 ## Contracts details
 - **in Colorado** Verifier.sol deployed to eth-mainnet: `0x2c2b1601ccb2e2d40812de8168737cc44a63ed61` 
