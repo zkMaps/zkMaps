@@ -13,9 +13,7 @@ https://www.notion.so/4fb730fe3eab4c5193120e0964990e19?v=ba4ff15f168f46a5be9c043
 ## Using the build script
 
 1. `cd circuits`
-2. `./full_build.sh basic` to test the environment with a simple circuit
-3.  `./full_build.sh AtEthDenver` to build the AtEthDenver circuit
-4.  `./generate_proof.sh AtEthDenver` generate proof
+2.  `./full_build.sh AtEthDenver` to test the environment with a basic circuit
 
 ## Circom
 
