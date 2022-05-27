@@ -6,25 +6,25 @@ include "../node_modules/circomlib/circuits/bitify.circom";
 
 /*
 
-Given a line L from the point (0,0) to the point (x,y), is the point P = (a,b), output 1 if 
-P is above L, and output 0 if it is below.
+Given a line L from the point (0,0) to the point (x,y) where x and y are positive, is the point P = (a,b), output 1 if 
+P is above L, and output 0 if it is on or below the line.
 
-Note that this should be used with other constraints specifying that 0 <= a <= x, and 0 <= b <= y, and
-that P is not on the line L.
+Note that this should be used with other constraints specifying that 0 <= a <= x, and 0 <= b <= y, x <= 0, and y <= 0.
+Further, note that this is restricted to lines with positive slopes.
 
 i.e., (x,y) = (2,2)
 
-1 1 X
-1 X 0
-X 0 0
+1 1 0
+1 0 0
+0 0 0
 
 or (x,y) = (3,4)
 
-1 1 1 X
+1 1 1 0
 1 1 1 0
 1 1 0 0
 1 0 0 0
-X 0 0 0
+0 0 0 0
 
 Think of y/x as slope, and note that if y/x * a < b we output a 1.
 Take the above example: let (x,y) = (3,4) and (a,b) = (1,2), then 4/3 * 1 = 1.33... < 2
@@ -41,7 +41,7 @@ template AboveLine() {
     signal input a; // The x coordinate of our point
     signal input b; // The y coordinate of our point
 
-    signal output out; // Is the point (a,b) about the line (x,y)?
+    signal output out; // Boolean specifying whether the point (a,b) above the line (x,y)
 
     // check that x, y, a, and b < sqrt(p)
     component xgt120 = gt120();
