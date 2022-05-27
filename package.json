@@ -35,6 +35,7 @@
   "dependencies": {
     "circom": "^0.5.46",
     "circom1": "npm:circom@^0.5.46",
+    "circomlib": "^2.0.3",
     "hardhat-circom": "^1.2.0"
   }
 }

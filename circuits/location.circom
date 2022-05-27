@@ -1,6 +1,6 @@
 // pragma circom 2.0.0;
 
-include "./dependencies/circomlib/comparators.circom";
+include "../node_modules/circomlib/circuits/comparators.circom";
 
 // Utility functions for location based circuits
 
