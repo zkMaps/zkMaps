@@ -46,14 +46,6 @@ template LineOutsideRectangle(accuracy) {
     rightCheck.greater[0] <== line[0];
     rightCheck.greater[1] <== line[2];
     signal right <== rightCheck.out;
-    
-    // check line[1] < rect[1] && line[1] < rect[3] && line[3] < rect[1] && line[3] < rect[3]
-    component topCheck = BothLess(accuracy);
-    topCheck.lesser[0] <== line[1];
-    topCheck.lesser[1] <== line[3];
-    topCheck.greater[0] <== rect[1];
-    topCheck.greater[1] <== rect[3];
-    signal top <== topCheck.out;
 
     // check line[1] < rect[1] && line[1] < rect[3] && line[3] < rect[1] && line[3] < rect[3]
     component topCheck = BothLess(accuracy);
@@ -62,6 +54,14 @@ template LineOutsideRectangle(accuracy) {
     topCheck.greater[0] <== line[1];
     topCheck.greater[1] <== line[3];
     signal top <== topCheck.out;
+    
+    component bottomCheck = BothLess(accuracy);
+
+    bottomCheck.lesser[0] <== line[1];
+    bottomCheck.lesser[1] <== line[3];
+    bottomCheck.greater[0] <== rect[1];
+    bottomCheck.greater[1] <== rect[3];
+    signal bottom <== bottomCheck.out;
 
     // assume that top, bottom, left, and right are constrained to 0 or 1 by the GreaterThan and LessThan components,
     // so outside_sides is 0, 1, 2, 3, or 4 (0, 1, or 2 if the geometry is correct)
@@ -87,13 +87,14 @@ template BothLess(accuracy) {
         for (var j=0; j<2; j++) {
             var ind = i*2+j;
             lt[ind] = LessThan(accuracy);
-            lt[ind].in[0] <== line[i];
-            lt[ind].in[1] <== rect[j];
+            lt[ind].in[0] <== lesser[i];
+            lt[ind].in[1] <== greater[j];
         }
     }
+
     signal l1 <== lt[0].out * lt[1].out;
     signal l2 <== lt[2].out * lt[3].out;
-    signal left <== l1 * l2;
+    out <== l1 * l2;
 }
 
 component main = LineOutsideRectangle(64);
