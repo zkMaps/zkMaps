@@ -25,42 +25,50 @@ describe("Above Line Test", function () {
         // assert.equal(circuit.constraints.length, 4347); // TODO: verify that this is expected
     })
 
-    it("Should consider vertices to be below the line", async () => {
+    f = async (x, y, a, b) => {
+        await circuit.calculateWitness({ "x": x, "y": y, "a": a, "b": b }, true)
+    }
+
+    it("Should fail to perform tests on vertices", async () => {
         for (var i=1; i<=64; i*=4) {
             for (var j=1; j<=64; j*=4) {
-                var witness = await circuit.calculateWitness({ "x": i, "y": j, "a": i, "b": j }, true);
-                assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
-
-                witness = await circuit.calculateWitness({ "x": i, "y": j, "a": 0, "b": 0 }, true);
-                assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+                await chai.expect(f(i, j, i, j)).to.eventually.be.rejectedWith("Assert Failed");
+                await chai.expect(f(i, j, 0, 0)).to.eventually.be.rejectedWith("Assert Failed");
             }
         }
     })
 
-    it("Should handle all cases on a 4x5 rectangle", async () => {
+    it("Should handle all cases on a 4x5 and 5x5 rectangle", async () => {
         /*
-            4   1 1 1 0
+            4   1 1 1 X
             3   1 1 1 0
             2   1 1 0 0
             1   1 0 0 0
-            0   0 0 0 0
+            0   X 0 0 0
 
                 0 1 2 3
         */
 
-        for (var i=0; i<4; i++) {
-            for (var j=0; j<5; j++) {
-                witness = await circuit.calculateWitness({ "x": 3, "y": 4, "a": i, "b": j }, true);
-                const result = 4*i < 3*j ? 1: 0; // y/x < b/a -> ay < bx -> 4i < 3j
-                assert(Fr.eq(Fr.e(witness[1]), Fr.e(result)));
+        var rects = [[3,4], [4,4]];
+        
+        for (var k=0; k < rects.length; k++) {
+            var x = rects[k][0];
+            var y = rects[k][1];
+            for (var a=0; a<=x; a++) {
+                for (var b=0; b<=y; b++) {
+                    if (y*a === x*b) {
+                        await chai.expect(f(x, y, a, b)).to.eventually.be.rejectedWith("Assert Failed");
+                    } else {
+                        const result = y*a < x*b ? 1: 0; // y/x < b/a -> ay < bx
+                        witness = await circuit.calculateWitness({ "x": x, "y": y, "a": a, "b": b }, true);
+                        assert(Fr.eq(Fr.e(witness[1]), Fr.e(result)));
+                    }
+                }
             }
         }
     })
 
     it("Should require consistent values of x, y, a, and b", async () => {
-        f = async (x, y, a, b) => {
-            await circuit.calculateWitness({ "x": x, "y": y, "a": a, "b": b }, true)
-        }
         var p_minus_1 = Fr.e("21888242871839275222246405745257275088548364400416034343698204186575808495616")
         var cases = [
             // a and b above x and y
@@ -92,17 +100,15 @@ describe("Above Line Test", function () {
         }
     })
 
-    it("Should consider all points below when the rectangle is a line", async () => {
+    it("Should fail when the rectangle is a line", async () => {
         // horizontal lines of length 5
         for (var i=0; i<5; i++) {
-            witness = await circuit.calculateWitness({ "x": 4, "y": 0, "a": i, "b": 0 }, true);
-            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+            await chai.expect(f(4, 0, i, 0)).to.eventually.be.rejectedWith("Assert Failed");
         }
 
          // vertical lines of length 5
          for (var i=0; i<5; i++) {
-            witness = await circuit.calculateWitness({ "x": 0, "y": 4, "a": 0, "b": i }, true);
-            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+            await chai.expect(f(0, 4, 0, i)).to.eventually.be.rejectedWith("Assert Failed");
         }
     })
 })

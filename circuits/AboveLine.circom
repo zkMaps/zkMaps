@@ -7,24 +7,25 @@ include "../node_modules/circomlib/circuits/bitify.circom";
 /*
 
 Given a line L from the point (0,0) to the point (x,y) where x and y are positive, is the point P = (a,b), output 1 if 
-P is above L, and output 0 if it is on or below the line.
+P is above L, and output 0 if it is on or below the line. The component fails if the point is on the line.
+The component also fails if the point is outside the rectangle [(0,0), (x,y)].
 
-To avoid overflow issues we require that 0 <= a <= x, and 0 <= b <= y, 0 <= x, y <= 2^accuracy
+To avoid overflow issues we require that 0 <= x, y <= 2^accuracy
 Note, we assume that 2^accuracy < sqrt(p)
 
 i.e., (x,y) = (2,2)
 
-1 1 0
-1 0 0
-0 0 0
+1 1 X
+1 X 0
+X 0 0
 
 or (x,y) = (3,4)
 
-1 1 1 0
+1 1 1 X
 1 1 1 0
 1 1 0 0
 1 0 0 0
-0 0 0 0
+X 0 0 0
 
 Think of y/x as slope, and note that if y/x * a < b we output a 1.
 Take the above example: let (x,y) = (3,4) and (a,b) = (1,2), then 4/3 * 1 = 1.33... < 2
@@ -75,6 +76,11 @@ template AboveLine(accuracy) {
     component lt = LessThan(accuracy);
     lt.in[0] <== ya;
     lt.in[1] <== xb;
+
+    // fail if y*a = x*b
+    component isZero = IsZero();
+    isZero.in <== ya - xb;
+    isZero.out === 0;
 
     out <== lt.out;
 }
