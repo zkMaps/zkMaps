@@ -74,16 +74,16 @@ describe("Above Line Test", function () {
             [10, p_minus_1, 1, 1],
 
             // x and y negative
-            [-1, 10, 1, 1],
-            [10, -1, 1, 1],
+            [Fr.e(-1), 10, 1, 1],
+            [10, Fr.e(-1), 1, 1],
 
             // a and b too high
             [10, 10, p_minus_1, 1],
             [10, 10, 1, p_minus_1],
 
             // a and b negative
-            [10, 10, -1, 1],
-            [10, 10, 1, -1],
+            [10, 10, Fr.e(-1), 1],
+            [10, 10, 1, Fr.e(-1)],
         ]
 
         for (let i = 0; i < cases.length; i++) {
