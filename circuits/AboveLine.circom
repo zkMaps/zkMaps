@@ -102,6 +102,4 @@ template inrange(accuracy) {
     sizeCheck.out * 1 === 0;
     (aboveZero.out - 1) * 0 === 0; // make sure it's greater than or equal to 0
     out <== sizeCheck.out;
-
-
 }
