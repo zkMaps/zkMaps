@@ -15,7 +15,7 @@ describe("Above Line Test", function () {
 
     var circuit;
     this.beforeAll(async () => {
-        var filepath = path.join(__dirname, "..", "AboveLine.circom")
+        var filepath = path.join(__dirname, "AboveLine.circom")
         circuit = await wasm_tester(filepath);
         await circuit.loadConstraints();
         assert.equal(circuit.constraints.length, 3171); // TODO: verify that this is expected

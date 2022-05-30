@@ -96,5 +96,3 @@ template BothLess(accuracy) {
     signal l2 <== lt[2].out * lt[3].out;
     out <== l1 * l2;
 }
-
-component main = LineOutsideRectangle(64);

@@ -85,5 +85,3 @@ template gt(accuracy) {
 
     out <== sizeCheck.out;
 }
-
-component main = AboveLine(64);
