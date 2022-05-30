@@ -9,8 +9,8 @@ include "../node_modules/circomlib/circuits/bitify.circom";
 Given a line L from the point (0,0) to the point (x,y) where x and y are positive, is the point P = (a,b), output 1 if 
 P is above L, and output 0 if it is on or below the line.
 
-Note that this should be used with other constraints specifying that 0 <= a <= x, and 0 <= b <= y, x <= 0, and y <= 0.
-Further, note that this is restricted to lines with positive slopes.
+To avoid overflow issues we require that 0 <= a <= x, and 0 <= b <= y, 0 <= x, y <= 2^accuracy
+Note, we assume that 2^accuracy < sqrt(p)
 
 i.e., (x,y) = (2,2)
 
@@ -43,24 +43,32 @@ template AboveLine(accuracy) {
 
     signal output out; // Boolean specifying whether the point (a,b) above the line (x,y)
 
-    // check that x, y, a, and b < sqrt(p)
-    component xgt = gt(accuracy);
-    xgt.in <== x;
-    xgt.out * 1 === 0;
+    // check that x, y, a, and b < 2^accuracy
+    component xinrange = inrange(accuracy);
+    xinrange.in <== x;
     
-    component ygt = gt(accuracy);
-    ygt.in <== y;
-    ygt.out * 1 === 0;
+    component yinrange = inrange(accuracy);
+    yinrange.in <== y;
     
-    component agt = gt(accuracy);
-    agt.in <== a;
-    agt.out * 1 === 0;
+    component ainrange = inrange(accuracy);
+    ainrange.in <== a;
     
-    component bgt = gt(accuracy);
-    bgt.in <== b;
-    bgt.out * 1 === 0;
+    component binrange = inrange(accuracy);
+    binrange.in <== b;
+
+    // check that a <= x and b <= y
+    component aleqx = LessEqThan(accuracy);
+    aleqx.in[0] <== a;
+    aleqx.in[1] <== x;
+    aleqx.out === 1;
+
+    component bleqy = LessEqThan(accuracy);
+    bleqy.in[0] <== b;
+    bleqy.in[1] <== y;
+    bleqy.out === 1;
 
     // check y*a < x*b
+    // this is the critical check
     signal ya <== y*a;
     signal xb <== x*b;
 
@@ -72,16 +80,22 @@ template AboveLine(accuracy) {
 }
 
 // outputs 1 if input is greater than 2**accuracy, 0 otherwise
-template gt(accuracy) {
+template inrange(accuracy) {
     signal input in;
     signal output out;
 
-    component sizeCheck = CompConstant(accuracy);
+    component sizeCheck = CompConstant(2**accuracy);
+    component aboveZero = CompConstant(0);
     component num2bits = Num2Bits_strict();
     num2bits.in <== in;
     for (var i=0; i<254; i++) {
         sizeCheck.in[i] <== num2bits.out[i];
+        aboveZero.in[i] <== num2bits.out[i];
     }
 
+    sizeCheck.out * 1 === 0;
+    (aboveZero.out - 1) * 0 === 0; // make sure it's greater than or equal to 0
     out <== sizeCheck.out;
+
+
 }

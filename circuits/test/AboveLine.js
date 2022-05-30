@@ -1,4 +1,8 @@
 const chai = require("chai");
+const chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
+chai.should();
+
 const path = require("path");
 
 const wasm_tester = require("circom_tester").wasm;
@@ -18,7 +22,7 @@ describe("Above Line Test", function () {
         var filepath = path.join(__dirname, "AboveLine.circom")
         circuit = await wasm_tester(filepath);
         await circuit.loadConstraints();
-        assert.equal(circuit.constraints.length, 3171); // TODO: verify that this is expected
+        // assert.equal(circuit.constraints.length, 4347); // TODO: verify that this is expected
     })
 
     it("Should consider vertices to be below the line", async () => {
@@ -52,4 +56,41 @@ describe("Above Line Test", function () {
             }
         }
     })
+
+    it("Should require positive x and y", async () => {
+        f = async (x, y, a, b) => {
+            await circuit.calculateWitness({ "x": x, "y": y, "a": a, "b": b }, true)
+        }
+        var p_minus_1 = Fr.e("21888242871839275222246405745257275088548364400416034343698204186575808495616")
+        var cases = [
+            // a and b above x and y
+            [10, 10, 11, 11],
+            [10, 10, 11, 0],
+            [10, 10, 0, 11],
+            [100, 1, 2, 2],
+
+            // x and y too high
+            [p_minus_1, 10, 1, 1],
+            [10, p_minus_1, 1, 1],
+
+            // x and y negative
+            [-1, 10, 1, 1],
+            [10, -1, 1, 1],
+
+            // a and b too high
+            [10, 10, p_minus_1, 1],
+            [10, 10, 1, p_minus_1],
+
+            // a and b negative
+            [10, 10, -1, 1],
+            [10, 10, 1, -1],
+        ]
+
+        for (let i = 0; i < cases.length; i++) {
+            const c = cases[i];
+            await chai.expect(f(c[0], c[1], c[2], c[3])).to.eventually.be.rejectedWith("Assert Failed");
+        }
+    })
+
+    it("Should require small positive a and b")
 })

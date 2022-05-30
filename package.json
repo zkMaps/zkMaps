@@ -33,6 +33,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
+    "chai-as-promised": "^7.1.1",
     "circom_tester": "0.0.11",
     "circomlib": "^2.0.3",
     "hardhat-circom": "^1.2.0",
