@@ -22,7 +22,7 @@ describe("Above Line Test", function () {
         var filepath = path.join(__dirname, "PointOnRect.circom")
         circuit = await wasm_tester(filepath);
         await circuit.loadConstraints();
-        // assert.equal(circuit.constraints.length, 4347); // TODO: verify that this is expected
+        assert.equal(circuit.constraints.length, 137); // TODO: verify that this is expected
     })
 
     it("Should be able to identify if a point is on a 5x5 rectangle", async () => {

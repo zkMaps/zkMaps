@@ -22,7 +22,7 @@ describe("Above Line Test", function () {
         var filepath = path.join(__dirname, "AboveLine.circom")
         circuit = await wasm_tester(filepath);
         await circuit.loadConstraints();
-        // assert.equal(circuit.constraints.length, 4347); // TODO: verify that this is expected
+        assert.equal(circuit.constraints.length, 4348); // TODO: verify that this is expected
     })
 
     f = async (x, y, a, b) => {
