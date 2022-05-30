@@ -1,6 +1,5 @@
 const chai = require("chai");
 const path = require("path");
-const fs = require("fs")
 
 const wasm_tester = require("circom_tester").wasm;
 
@@ -11,7 +10,7 @@ const Fr = new F1Field(exports.p);
 
 const assert = chai.assert;
 
-describe("Binary sum test", function () {
+describe("Outside Rectangle Test", function () {
     this.timeout(100000000);
 
     var circuit;
