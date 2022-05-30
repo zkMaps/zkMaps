@@ -57,7 +57,7 @@ describe("Above Line Test", function () {
         }
     })
 
-    it("Should require positive x and y", async () => {
+    it("Should require consistent values of x, y, a, and b", async () => {
         f = async (x, y, a, b) => {
             await circuit.calculateWitness({ "x": x, "y": y, "a": a, "b": b }, true)
         }
@@ -92,5 +92,17 @@ describe("Above Line Test", function () {
         }
     })
 
-    it("Should require small positive a and b")
+    it("Should consider all points below when the rectangle is a line", async () => {
+        // horizontal lines of length 5
+        for (var i=0; i<5; i++) {
+            witness = await circuit.calculateWitness({ "x": 4, "y": 0, "a": i, "b": 0 }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+        }
+
+         // vertical lines of length 5
+         for (var i=0; i<5; i++) {
+            witness = await circuit.calculateWitness({ "x": 0, "y": 4, "a": 0, "b": i }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+        }
+    })
 })
