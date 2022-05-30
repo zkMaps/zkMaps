@@ -15,7 +15,7 @@ describe("Outside Rectangle Test", function () {
 
     var circuit;
     this.beforeAll(async () => {
-        var filepath = path.join(__dirname, "OutsideRectangle.circom")
+        var filepath = path.join(__dirname, "OutsideRect.circom")
         circuit = await wasm_tester(filepath);
         await circuit.loadConstraints();
         assert.equal(circuit.constraints.length, 1054); // TODO: verify that this is expected

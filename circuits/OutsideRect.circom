@@ -25,7 +25,7 @@ Returns 1 the line is fully outside the rectangle on any of the 4 sides, i.e.:
     both [py1, py2] < [ry1, ry2]
 */
 
-template LineOutsideRectangle(accuracy) {
+template LineOutsideRect(accuracy) {
     signal input rect[4]; // rx1, ry1, rx2, ry2
     signal input line[4]; // px1, py1, px2, py2
 
