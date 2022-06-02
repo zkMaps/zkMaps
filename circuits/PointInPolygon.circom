@@ -1,3 +1,5 @@
+pragma circom 2.0.0;
+
 include "../node_modules/circomlib/circuits/sign.circom";
 include "../node_modules/circomlib/circuits/bitify.circom";
 
@@ -59,7 +61,8 @@ template Orientation(grid_bits) {
     assert(grid_bits <= 126);
 
     // (y1 - y0) * (x2 - x1) - (y2 - y1) * (x1 - x0)
-    signal f <== (points[1][1] - points[0][1]) * (points[2][0] - points[1][0]) - (points[2][1] - points[1][1]) * (points[1][0] - points[0][0]);
+    signal part <== (points[1][1] - points[0][1]) * (points[2][0] - points[1][0]);
+    signal f <== part - (points[2][1] - points[1][1]) * (points[1][0] - points[0][0]);
     
     // Find the sign of f
     component num2Bits = Num2Bits(254);
@@ -73,15 +76,15 @@ template Orientation(grid_bits) {
     // Find out whether f is 0
     component isZero = IsZero();
     isZero.in <== f;
+    signal nonZero <== (isZero.out-1)*(-1);
 
     // Calculate the orientation
-    // isZero   | isNegative    | Orientation
-    // 0        | 0             | 1
-    // 0        | 1             | 2
-    // 1        | 0             | 0
-    // 1        | 1             | 0
-    out <== (isZero-1)*(isNegative+1)
-    
+    // nonZero  | isNegative    | Orientation
+    // 0        | 0             | 0
+    // 0        | 1             | 0
+    // 1        | 0             | 1
+    // 1        | 1             | 2
+    out <== nonZero*(isNegative.sign+1);
 }
 
 /*
