@@ -2,6 +2,7 @@ pragma circom 2.0.0;
 
 include "../node_modules/circomlib/circuits/sign.circom";
 include "../node_modules/circomlib/circuits/bitify.circom";
+include "../node_modules/circomlib/circuits/comparators.circom";
 
 /*
 Returns 1 if a given point is in an n sided polygon, 0 otherwise.
@@ -89,6 +90,21 @@ template Orientation(grid_bits) {
     // confirm that the output is of the correct form
     signal x <== out * (out - 1);
     x * (out - 2) === 0;
+}
+
+/*
+Return two values in order
+*/
+template Order(grid_bits) {
+    signal input in[2];
+    signal output out[2];
+
+    component lt = GreaterThan(grid_bits);
+    lt.in[0] <== in[0];
+    lt.in[1] <== in[1];
+
+    out[0] <== (in[1] - in[0])*lt.out + in[0];
+    out[1] <== (in[0] - in[1])*lt.out + in[1];
 }
 
 /*

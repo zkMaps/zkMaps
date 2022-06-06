@@ -14,6 +14,35 @@ const Fr = new F1Field(exports.p);
 
 const assert = chai.assert;
 
+describe("Order", function () {
+    this.timeout(100000000);
+
+    var circuit;
+    this.beforeAll(async () => {
+        var filepath = path.join(__dirname, "Order.circom")
+        circuit = await wasm_tester(filepath);
+        await circuit.loadConstraints();
+        assert.equal(circuit.constraints.length, 35); // TODO: verify that this is expected
+    })
+
+    it("Should return values in order", async () => {
+        var cases = [
+            [1234, 43],
+            [84, 44],
+            [0, 433],
+            [0,0],
+            [12,12],
+        ]
+
+        for (let i=0; i < cases.length; i++) {
+            const c = cases[i];
+            var witness = await circuit.calculateWitness({ "in": [c[0], c[1]] }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(Math.min(c[0], c[1]))));
+            assert(Fr.eq(Fr.e(witness[2]), Fr.e(Math.max(c[0], c[1]))));
+        }
+    })
+})
+
 describe("Orientation", function () {
     this.timeout(100000000);
 
