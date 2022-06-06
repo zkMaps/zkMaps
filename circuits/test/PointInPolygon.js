@@ -14,6 +14,84 @@ const Fr = new F1Field(exports.p);
 
 const assert = chai.assert;
 
+describe("OnSegment", function () {
+    this.timeout(100000000);
+
+    var circuit;
+    this.beforeAll(async () => {
+        var filepath = path.join(__dirname, "OnSegment.circom")
+        circuit = await wasm_tester(filepath);
+        await circuit.loadConstraints();
+        assert.equal(circuit.constraints.length, 206); // TODO: verify that this is expected
+    })
+
+    var line = [[5,5], [10,10]]
+    it("Should accpet when the point is on both projections", async () => {
+        var points = [
+            [5,5],
+            [5,7],
+            [5,10],
+            
+            [7,5],
+            [7,7],
+            [7,10],
+            
+            [10,5],
+            [10,7],
+            [10,10],
+        ]
+
+        for (let i=0; i < points.length; i++) {
+            const point = points[i];
+            var witness = await circuit.calculateWitness({ "line": line, "point": point }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        }
+    })
+
+    it("Should reject when the point is on neither projection", async () => {
+        var points = [
+            [0,0],
+            [4,4],
+            [11,11],
+            [1000,1000],
+            [4,11],
+            [11,4],
+        ]
+
+        for (let i=0; i < points.length; i++) {
+            const point = points[i];
+            var witness = await circuit.calculateWitness({ "line": line, "point": point }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+        }
+    })
+
+    it("Should reject when the point is on one projection but not the other", async () => {
+        var points = [
+            [0,5],
+            [0,7],
+            [0,10],
+
+            [4,5],
+            [4,7],
+            [4,10],
+
+            [11,5],
+            [11,7],
+            [11,10],
+        ]
+
+        for (let i=0; i < points.length; i++) {
+            const point = points[i];
+            var witness = await circuit.calculateWitness({ "line": line, "point": point }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+
+            // reverse x and y
+            var witness = await circuit.calculateWitness({ "line": line, "point": [point[1], point[0]] }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+        }
+    })
+})
+
 describe("Order", function () {
     this.timeout(100000000);
 

@@ -93,6 +93,52 @@ template Orientation(grid_bits) {
 }
 
 /*
+Given 3 colinear points, the function checks if point lies on line segment line[0]line[1]
+*/
+template OnSegment(grid_bits) {
+    signal input line[2][2];
+    signal input point[2];
+    signal output out;
+
+    // order the x and y values
+    component ordered_x = Order(grid_bits);
+    ordered_x.in[0] <== line[0][0];
+    ordered_x.in[1] <== line[1][0];
+
+    component ordered_y = Order(grid_bits);
+    ordered_y.in[0] <== line[0][1];
+    ordered_y.in[1] <== line[1][1];
+
+    // Check that the point is on the x-projection
+    component aboveMinX = LessEqThan(grid_bits);
+    aboveMinX.in[0] <== ordered_x.out[0];
+    aboveMinX.in[1] <== point[0];
+
+    component belowMaxX = LessEqThan(grid_bits);
+    belowMaxX.in[0] <== point[0];
+    belowMaxX.in[1] <== ordered_x.out[1];
+
+    signal on_x_projection <== aboveMinX.out * belowMaxX.out;
+
+    // Check that the point is on the y-projection
+        component aboveMinY = LessEqThan(grid_bits);
+    aboveMinY.in[0] <== ordered_y.out[0];
+    aboveMinY.in[1] <== point[1];
+
+    component belowMaxY = LessEqThan(grid_bits);
+    belowMaxY.in[0] <== point[1];
+    belowMaxY.in[1] <== ordered_y.out[1];
+
+    signal on_y_projection <== aboveMinY.out * belowMaxY.out;
+
+    // return whether the point is on both the x and y projections
+    out <== on_x_projection * on_y_projection;
+
+    // make sure the output is 0 or 1
+    out * (out - 1) === 0;
+}
+
+/*
 Return two values in order
 */
 template Order(grid_bits) {
