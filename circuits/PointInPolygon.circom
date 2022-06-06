@@ -34,9 +34,54 @@ template RayTracing(n, grid_bits) {
 Returns 1 if two lines segments intersect, 0 otherwise.
 */
 template Intersects(grid_bits) {
-    signal input ray_end[2];
+    signal input line1[2][2];
     signal input line2[2][2];
     signal output out;
+
+    /*
+    Setup orientation circuits:
+        Orientation[0] takes inputs line1 and line2[0]
+        Orientation[1] takes inputs line1 and line2[1]
+        Orientation[2] takes inputs line2 and line2[0]
+        Orientation[3] takes inputs line2 and line2[1]
+    */
+    component orientation[4];
+    for (var i=0; i<2; i++) {
+        // Orientation with respect to line1
+
+        orientation[i] = Orientation(grid_bits);
+        // line1 point 1
+        orientation[i].points[0][0] <== line1[0][0];
+        orientation[i].points[0][1] <== line1[0][1];
+        // line1 point 2
+        orientation[i].points[1][0] <== line1[1][0];
+        orientation[i].points[1][1] <== line1[1][1];
+        // line2 point i
+        orientation[i].points[2][0] <== line2[i][0];
+        orientation[i].points[2][1] <== line2[i][1];
+
+        // Orientation with respect to line2
+        orientation[i+2] = Orientation(grid_bits);
+        // line2 point 1
+        orientation[i+2].points[0][0] <== line2[0][0];
+        orientation[i+2].points[0][1] <== line2[0][1];
+        // line2 point 2
+        orientation[i+2].points[1][0] <== line2[1][0];
+        orientation[i+2].points[1][1] <== line2[1][1];
+        // line1 point i
+        orientation[i+2].points[2][0] <== line1[i][0];
+        orientation[i+2].points[2][1] <== line1[i][1];
+    }
+
+    // If both points of each line segments are on different sides (i.e., have different orientations wrt) the other line, the
+    // line segments certainly intersect.
+    // This expression is 0 (false) if the orientations of both points of either line segments are equal.
+    // We then normalise the expression to 0 or 1
+    component isZero = IsZero();
+    isZero.in <== (orientation[0].out - orientation[1].out) * (orientation[2].out - orientation[3].out);
+    signal intersects <== (isZero.out - 1)*(-1);
+
+    out <== intersects;
 }
 
 /*
@@ -160,5 +205,5 @@ template SimplePolygon(n, grid_bits) {
     signal input polygon[n][2];
     signal output out;
 
-    // https://web.archive.org/web/20060613060645/http://softsurfer.com/Archive/algorithm_0108/algorithm_0108.htm#Test%20if%20Simple
+    // Make sure none of the lines intersect, except two adjacent lines, where we just require that p3 can't be on the segment p1p2
 }

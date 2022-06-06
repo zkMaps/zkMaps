@@ -14,6 +14,81 @@ const Fr = new F1Field(exports.p);
 
 const assert = chai.assert;
 
+describe("Intersects", function () {
+    this.timeout(100000000);
+
+    var circuit;
+    this.beforeAll(async () => {
+        var filepath = path.join(__dirname, "Intersects.circom")
+        circuit = await wasm_tester(filepath);
+        await circuit.loadConstraints();
+        assert.equal(circuit.constraints.length, 2095); // TODO: verify that this is expected
+    })
+
+    var test_transformations = async (cases, result) => {
+        for (let i = 0; i < cases.length; i++) {
+            const c = cases[i];
+            var witness = await circuit.calculateWitness({ "line1": c[0], "line2": c[1] }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(result)));
+
+            // flip order
+            var witness = await circuit.calculateWitness({ "line1": c[1], "line2": c[0] }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(result)));
+
+            // flip coordinates
+            var witness = await circuit.calculateWitness({ "line1": [c[0][1], c[0][0]], "line2": [c[1][1], c[1][0]] }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(result)));
+        }
+    }
+
+    it("Should recognise basic intersections", async () => {
+        var cases = [
+            [
+                [[0,0],[1,1]],
+                [[1,0], [0,1]],
+            ],
+            [
+                [[0,0],[10,10]],
+                [[1,0], [0,1]],
+            ],
+            [
+                [[0,10], [10,10]],
+                [[5,0], [5,15]],
+            ]
+        ]
+
+        await test_transformations(cases, 1)
+    })
+
+    it("Should recognise non intersections", async () => {
+        var cases = [
+            // diagonal lines
+            [
+                // parallel
+                [[0,0],[1,1]], 
+                [[0,1], [1,2]],
+            ],
+            [
+                // t-shaped
+                [[0,0],[1,1]],
+                [[1,2], [2,1]],
+            ],
+            // horizontal first line
+            [
+                // parallel
+                [[0,10],[10,10]],
+                [[0,0], [10,0]],
+            ],
+            [
+                // t-shaped
+                [[0,10], [10,10]],
+                [[11,0], [11,15]],
+            ]
+        ]
+        await test_transformations(cases, 0)
+    })
+})
+
 describe("OnSegment", function () {
     this.timeout(100000000);
 
