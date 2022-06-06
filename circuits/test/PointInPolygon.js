@@ -22,7 +22,7 @@ describe("Orientation", function () {
         var filepath = path.join(__dirname, "Orientation.circom")
         circuit = await wasm_tester(filepath);
         await circuit.loadConstraints();
-        assert.equal(circuit.constraints.length, 521); // TODO: verify that this is expected
+        assert.equal(circuit.constraints.length, 523); // TODO: verify that this is expected
     })
 
     var transform = (points, plusX, plusY, timesX, timesY) => {

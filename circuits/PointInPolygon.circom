@@ -85,6 +85,10 @@ template Orientation(grid_bits) {
     // 1        | 0             | 1
     // 1        | 1             | 2
     out <== nonZero*(isNegative.sign+1);
+
+    // confirm that the output is of the correct form
+    signal x <== out * (out - 1);
+    x * (out - 2) === 0;
 }
 
 /*
