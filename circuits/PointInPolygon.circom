@@ -44,8 +44,11 @@ template Intersects(grid_bits) {
         Orientation[1] takes inputs line1 and line2[1]
         Orientation[2] takes inputs line2 and line2[0]
         Orientation[3] takes inputs line2 and line2[1]
+
+    Similarly for onSegment circuits
     */
     component orientation[4];
+    component onSegment[4];
     for (var i=0; i<2; i++) {
         // Orientation with respect to line1
 
@@ -60,6 +63,15 @@ template Intersects(grid_bits) {
         orientation[i].points[2][0] <== line2[i][0];
         orientation[i].points[2][1] <== line2[i][1];
 
+        // Point on line 1
+        onSegment[i] = OnSegment(grid_bits);
+        onSegment[i].line[0][0] <== line1[0][0];
+        onSegment[i].line[0][1] <== line1[0][1];
+        onSegment[i].line[1][0] <== line1[1][0];
+        onSegment[i].line[1][1] <== line1[1][1];
+        onSegment[i].point[0] <== line2[i][0];
+        onSegment[i].point[1] <== line2[i][1];
+
         // Orientation with respect to line2
         orientation[i+2] = Orientation(grid_bits);
         // line2 point 1
@@ -71,17 +83,39 @@ template Intersects(grid_bits) {
         // line1 point i
         orientation[i+2].points[2][0] <== line1[i][0];
         orientation[i+2].points[2][1] <== line1[i][1];
+
+        // Point on line 2
+        onSegment[i+2] = OnSegment(grid_bits);
+        onSegment[i+2].line[0][0] <== line2[0][0];
+        onSegment[i+2].line[0][1] <== line2[0][1];
+        onSegment[i+2].line[1][0] <== line2[1][0];
+        onSegment[i+2].line[1][1] <== line2[1][1];
+        onSegment[i+2].point[0] <== line1[i][0];
+        onSegment[i+2].point[1] <== line1[i][1];
     }
 
     // If both points of each line segments are on different sides (i.e., have different orientations wrt) the other line, the
     // line segments certainly intersect.
     // This expression is 0 (false) if the orientations of both points of either line segments are equal.
-    // We then normalise the expression to 0 or 1
-    component isZero = IsZero();
-    isZero.in <== (orientation[0].out - orientation[1].out) * (orientation[2].out - orientation[3].out);
-    signal intersects <== (isZero.out - 1)*(-1);
+    signal general_intersection <== (orientation[0].out - orientation[1].out) * (orientation[2].out - orientation[3].out);
 
-    out <== intersects;
+    // Handle special case: if a point is colinear with the other line, and it lies on that line, then the line segments intersect
+    signal on_line_intersection[4];
+    for (var i=0; i<4; i++) {
+        on_line_intersection[i] <== orientation[i].out + onSegment[i].out;
+    }
+    signal sc1 <== on_line_intersection[0] * on_line_intersection[1];
+    signal sc2 <== on_line_intersection[2] * on_line_intersection[3];
+    signal not_special_case <== sc1 * sc2;
+
+    // Final result
+    component not_general_intersection = IsZero();
+    not_general_intersection.in <== general_intersection;
+    signal not_out <== not_general_intersection.out * not_special_case;
+
+    component negate = IsZero();
+    negate.in <== not_out;
+    out <== negate.out;
 }
 
 /*
