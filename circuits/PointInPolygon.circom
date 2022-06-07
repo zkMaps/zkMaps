@@ -3,27 +3,47 @@ pragma circom 2.0.0;
 include "../node_modules/circomlib/circuits/sign.circom";
 include "../node_modules/circomlib/circuits/bitify.circom";
 include "../node_modules/circomlib/circuits/comparators.circom";
+include "../node_modules/circomlib/circuits/compconstant.circom";
 
 /*
 Returns 1 if a given point is in an n sided polygon, 0 otherwise.
 Implements ray tracing algorithm for simple polygons on a discrete 2^grid_bits length plane.
 Note, we don't check for complex or degenerate polygon.
 */
-template RayTracing(n, grid_bits) {
+template RayTracing(n, grid_bits, p) {
     signal input point[2];
     signal input polygon[n][2];
     signal output out;
 
     // Check that (2^grid_bits)^2 < p to prevent overflow
+    assert((2**grid_bits)**2 < p);
 
-    // Make sure every vertex in the polygon is in the range (0, 2^grid_bits)
-    // Note we don't allow vertices on the y-axis
+    // Make sure every vertex in the polygon is in the range [0, 2^grid_bits)
+    // Disallow vertices on the y-axis
+    component x_comp[n];
+    component y_comp[n];
+    for (var i=0; i<n; i++) {
+        x_comp[i] = CompConstant(grid_bits**2);
+        x_comp[i].in <== polygon[i][0];
+        x_comp[i].out === 0;
+
+        y_comp[i] = CompConstant(grid_bits**2 - 1);
+        y_comp[i].in <== polygon[i][1];
+        y_comp[i].out === 0;
+    }
 
     // Make sure the point is in the range (0, 2^grid_bits)
+    component comp;
+    for (var i=0; i<2; i++) {
+        comp[i] = CompConstant(grid_bits**2);
+        comp[i].in <== point[i];
+        comp[i].out === 0;
+    }
 
     // Make sure no vertices share a y coordinate with the point
     // This avoids edge cases where the ray intersects the polygon at a corner
     // Note that it means we don't consider these points to be inside the polygon
+    
 
     // Count the number of intersections with the ray
     // For each edge, determine whether the ray intersects the edge
@@ -241,3 +261,31 @@ template SimplePolygon(n, grid_bits) {
 
     // Make sure none of the lines intersect, except two adjacent lines, where we just require that p3 can't be on the segment p1p2
 }
+
+// From https://docs.circom.io/more-circuits/more-basic-circuits/#extending-our-multiplier-to-n-inputs
+template MultiplierN (N){
+   //Declaration of signals.
+   signal input in[N];
+   signal output out;
+   component comp[N-1];
+
+   //Statements.
+   for(var i = 0; i < N-1; i++){
+       comp[i] = Multiplier2();
+   }
+   comp[0].in1 <== in[0];
+   comp[0].in2 <== in[1];
+   for(var i = 0; i < N-2; i++){
+       comp[i+1].in1 <== comp[i].out;
+       comp[i+1].in2 <== in[i+2];
+
+   }
+   out <== comp[N-2].out; 
+}
+
+template Multiplier2() {
+    signal input in1;
+    signal input in2;
+    signal output out;
+    out <== in1*in2;
+ }

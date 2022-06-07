@@ -14,6 +14,23 @@ const Fr = new F1Field(exports.p);
 
 const assert = chai.assert;
 
+describe("Multiplier5", function () {
+    this.timeout(100000000);
+
+    var circuit;
+    this.beforeAll(async () => {
+        var filepath = path.join(__dirname, "Multiplier5.circom")
+        circuit = await wasm_tester(filepath);
+        await circuit.loadConstraints();
+        assert.equal(circuit.constraints.length, 4); // TODO: verify that this is expected
+    })
+
+    it("Should give the product of 5 numbers", async () => {
+        var witness = await circuit.calculateWitness({ "in": [1,2,3,4,5] }, true);
+        assert(Fr.eq(Fr.e(witness[1]), Fr.e(1*2*3*4*5)));
+    })
+})
+
 describe("Intersects", function () {
     this.timeout(100000000);
 
