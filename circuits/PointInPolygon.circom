@@ -10,44 +10,85 @@ Returns 1 if a given point is in an n sided polygon, 0 otherwise.
 Implements ray tracing algorithm for simple polygons on a discrete 2^grid_bits length plane.
 Note, we don't check for complex or degenerate polygon.
 */
-template RayTracing(n, grid_bits, p) {
+template RayTracing(n, grid_bits) {
     signal input point[2];
     signal input polygon[n][2];
     signal output out;
 
     // Check that (2^grid_bits)^2 < p to prevent overflow
-    assert((2**grid_bits)**2 < p);
+    // assert((2**grid_bits)**2 < p);
 
     // Make sure every vertex in the polygon is in the range [0, 2^grid_bits)
     // Disallow vertices on the y-axis
     component x_comp[n];
     component y_comp[n];
+    component x_zero[n];
     for (var i=0; i<n; i++) {
-        x_comp[i] = CompConstant(grid_bits**2);
+        // TODO: optimise
+        // We can possibly get rid of IsZero and just use a different CompComstant expression
+        // We might be able to get rid of the comps and just use assert, as asserts already fail in num2bits - will this make us vulnerable to a malicious prover?
+        x_comp[i] = Comp(2**grid_bits-1);
         x_comp[i].in <== polygon[i][0];
         x_comp[i].out === 0;
 
-        y_comp[i] = CompConstant(grid_bits**2 - 1);
+        x_zero[i] = IsZero();
+        x_zero[i].in <== polygon[i][0];
+        x_zero[i].out === 0;
+
+        y_comp[i] = Comp(2**grid_bits-1);
         y_comp[i].in <== polygon[i][1];
         y_comp[i].out === 0;
     }
 
     // Make sure the point is in the range (0, 2^grid_bits)
-    component comp;
+    component comp[2];
     for (var i=0; i<2; i++) {
-        comp[i] = CompConstant(grid_bits**2);
+        comp[i] = Comp(2**grid_bits-1);
         comp[i].in <== point[i];
         comp[i].out === 0;
     }
 
-    // Make sure no vertices share a y coordinate with the point
-    // This avoids edge cases where the ray intersects the polygon at a corner
-    // Note that it means we don't consider these points to be inside the polygon
-    
+    // We consider all points that share a y coordinate with a vertex to be outside the polygon
+    // This avoids edge cases where the ray intersects the polygon at a corner, which can either count as 1 or 2 crossings
+    // Note that this means our polygon is discontinuous and slightly counterintuitive
+    component mult = MultiplierN(n);
+    for (var i=0; i<n; i++) {
+        mult.in[i] <== polygon[i][1] - point[1];
+    }
+    // Normalise to 0 or 1
+    component isZero = IsZero();
+    isZero.in <== mult.out;
+    signal not_on_vertex_line <== (isZero.out-1)*(-1);
 
     // Count the number of intersections with the ray
     // For each edge, determine whether the ray intersects the edge
     // Return whether the number of intersections is even, meaning the point is outside the polygon
+    component intersections[n];
+    var intersection_sum = 0;
+    for (var i=0; i<n; i++) {
+        intersections[i] = Intersects(grid_bits);
+        // line1 is the ray, from (0,y) to (x,y)
+        intersections[i].line1[0][0] <== 0;
+        intersections[i].line1[0][1] <== point[1];
+        intersections[i].line1[1][0] <== point[0];
+        intersections[i].line1[1][1] <== point[1];
+
+        // line2 is the edge from polygon[n] to polygon[(n+1)%n]
+        intersections[i].line2[0][0] <== polygon[i][0];
+        intersections[i].line2[0][1] <== polygon[i][1];
+        intersections[i].line2[1][0] <== polygon[(i+1)%n][0];
+        intersections[i].line2[1][1] <== polygon[(i+1)%n][1];
+
+        // make sure the value is 0 or 1
+        intersections[i].out * (intersections[i].out - 1) === 0;
+        intersection_sum += intersections[i].out;
+    }
+
+    signal intersection_count <== intersection_sum;
+    component num2Bits = Num2Bits(n+1); // n+1 bits is easily sufficient to hold a value up to n, TODO: reduce to actual minimum
+    num2Bits.in <== intersection_count;
+    signal odd_intersections <== num2Bits.out[0];
+    out <== odd_intersections * not_on_vertex_line;
 }
 
 /*
@@ -57,6 +98,22 @@ template Intersects(grid_bits) {
     signal input line1[2][2];
     signal input line2[2][2];
     signal output out;
+
+    /*
+    Make sure neither of the lines are degenerate single points
+    */
+    component eq[4];
+    for (var i=0; i<2; i++) {
+        eq[i] = IsEqual();
+        eq[i].in[0] <== line1[0][i];
+        eq[i].in[1] <== line1[1][i];
+
+        eq[i+2] = IsEqual();
+        eq[i+2].in[0] <== line1[0][i];
+        eq[i+2].in[1] <== line1[1][i];
+    }
+    eq[0].out * eq[1].out === 0;
+    eq[2].out * eq[3].out === 0;
 
     /*
     Setup orientation circuits:
@@ -288,4 +345,20 @@ template Multiplier2() {
     signal input in2;
     signal output out;
     out <== in1*in2;
- }
+}
+
+template Comp(ct) {
+    signal input in;
+    signal output out;
+
+    // TODO: optimise by using grid_bits instead of 254
+    component num2Bits = Num2Bits(254);
+    num2Bits.in <== in;
+
+    component compare = CompConstant(ct);
+    for (var i=0; i<254; i++) {
+        compare.in[i] <== num2Bits.out[i];
+    }
+
+    out <== compare.out;
+}

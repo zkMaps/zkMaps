@@ -14,6 +14,147 @@ const Fr = new F1Field(exports.p);
 
 const assert = chai.assert;
 
+describe("Ray Tracing", function () {
+    this.timeout(100000000);
+
+    var circuit;
+    this.beforeAll(async () => {
+        var filepath = path.join(__dirname, "RayTracing4.circom")
+        circuit = await wasm_tester(filepath);
+        await circuit.loadConstraints();
+        // assert.equal(circuit.constraints.length, 4); // TODO: verify that this is expected
+    })
+
+    var f = async (polygon, point) => {
+        await circuit.calculateWitness({ "polygon": polygon, "point": point }, true)
+    }
+
+    var max = Fr.e("4294967295");
+    var max_plus_1 = Fr.e("4294967296");
+    it("Should fail to build witness for vertices outside the range", async () => {
+        var polygon = [[10,10], [10,15], [15,15], [15,10]]
+
+        // test each part of the polygon
+        for (let i = 0; i < 4; i++) {
+            // both coordinates must be less than 2^32
+            for (let j = 0; j < 2; j++) {
+                // passing for 2^32-1
+                let p = JSON.parse(JSON.stringify(polygon))
+                p[i][j] = max;
+                await f(p, [1,1])
+
+                // failing for 2^32
+                p[i][j] = max_plus_1;
+                await chai.expect(
+                    f(p, [1,1])
+                ).to.eventually.be.rejectedWith("Assert Failed")
+            }
+
+            // y can be 0
+            let p = JSON.parse(JSON.stringify(polygon))
+            p[i][1] = 0;
+            await f(p, [1,1])
+
+            // x can't be 0
+            p[i][0] = 0;
+            await chai.expect(
+                f(p, [1,1])
+            ).to.eventually.be.rejectedWith("Assert Failed")
+        }
+    })
+    
+    it("Should fail to build witness for points outside the range", async () => {
+        var p = [[10,10], [10,15], [15,15], [15,10]]
+        await f(p, [1,1])
+        await f(p, [max,max])
+        await chai.expect(f(p, [max_plus_1,max])).to.eventually.be.rejectedWith("Assert Failed")
+        await chai.expect(f(p, [max,max_plus_1])).to.eventually.be.rejectedWith("Assert Failed")
+        await chai.expect(f(p, [max_plus_1,max_plus_1])).to.eventually.be.rejectedWith("Assert Failed")
+    })
+    
+    it("Should find points that don't cross lines to be outside the polygon", async () => {
+        var polygon = [[10,10], [10,15], [15,15], [15,10]]
+        var cases = [
+            [1,1], // bottom left of polygon
+            [5,5], // bottom left
+            [1, 11], // left
+            [11,1], // bottom
+            [1, 16], // top left
+            [16, 1], // bottom right
+            [16, 16], // top right
+        ]
+
+        for (let i = 0; i < cases.length; i++) {
+            const c = cases[i];
+            
+            var witness = await circuit.calculateWitness({ "polygon": polygon, "point": c }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+        }
+    })
+    
+    it("Should find points that cross a single line to be inside the polygon", async () => {
+        var polygon = [[10,10], [10,15], [15,15], [15,10]]
+        var cases = [
+            [10,11],
+            [11,14],
+            [14, 11],
+            [14,14],
+        ]
+
+        for (let i = 0; i < cases.length; i++) {
+            const c = cases[i];
+            var witness = await circuit.calculateWitness({ "polygon": polygon, "point": c }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        }
+    })
+    
+    it("Should find points that cross 2 lines to be outside the polygon", async () => {
+        var polygon = [[10,10], [10,15], [15,15], [15,10]]
+        var cases = [
+            [16,11],
+            [16,14],
+            [10000,14],
+            [10000,14],
+        ]
+
+        for (let i = 0; i < cases.length; i++) {
+            const c = cases[i];
+            
+            var witness = await circuit.calculateWitness({ "polygon": polygon, "point": c }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+        }
+    })
+    
+    it("Should find points have the same y-coordinate as a vertex to be outside the polygon", async () => {
+        var polygon = [[10,10], [10,15], [15,15], [15,10]]
+        var cases = [
+            // Bottom line
+            [10,10],
+            [11,10],
+            [12,10],
+            [13,10],
+            [14,10],
+            [15,10],
+            [16,10],
+            // Top line
+            [10,15],
+            [11,15],
+            [13,15],
+            [12,15],
+            [14,15],
+            [15,15],
+            [16,15],
+        ]
+
+        for (let i = 0; i < cases.length; i++) {
+            const c = cases[i];
+            
+            var witness = await circuit.calculateWitness({ "polygon": polygon, "point": c }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+        }
+    })
+})
+
 describe("Multiplier5", function () {
     this.timeout(100000000);
 
@@ -57,6 +198,21 @@ describe("Intersects", function () {
             assert(Fr.eq(Fr.e(witness[1]), Fr.e(result)));
         }
     }
+
+    it("Should fail to build witnesses for a degenerate line", async () => {
+        var cases = [
+            [
+                [[0,0], [0,0]],
+                [[1,0], [10,0]],
+            ],
+            [
+                [[10,10], [10,10]],
+                [[1,0], [10,0]],
+            ]
+        ]
+
+        await chai.expect(test_transformations(cases, 1)).to.eventually.be.rejectedWith("Assert Failed")
+    })
 
     it("Should recognise basic intersections", async () => {
         var cases = [
