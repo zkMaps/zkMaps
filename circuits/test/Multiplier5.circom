@@ -1,5 +1,5 @@
 pragma circom 2.0.0;
 
-include "../PointInPolygon.circom";
+include "../Utility.circom";
 
 component main = MultiplierN(5);

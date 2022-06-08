@@ -1,5 +1,5 @@
 pragma circom 2.0.0;
 
-include "../PointInPolygon.circom";
+include "../Lines.circom";
 
 component main = Intersects(32);
