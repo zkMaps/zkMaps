@@ -14,6 +14,70 @@ const Fr = new F1Field(exports.p);
 
 const assert = chai.assert;
 
+describe("Simple Polygon", function () {
+    this.timeout(100000000);
+
+    var circuit;
+    this.beforeAll(async () => {
+        var filepath = path.join(__dirname, "Simple.circom")
+        circuit = await wasm_tester(filepath);
+        await circuit.loadConstraints();
+        // assert.equal(circuit.constraints.length, 4); // TODO: verify that this is expected
+    })
+
+    var test_permutations = async (polygon, result) => {
+        // cycle points around
+        i = 0;
+        while (i<5) {
+            i++
+            polygon.unshift(polygon.pop());
+            var witness = await circuit.calculateWitness({ "polygon": polygon }, true)
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(result)));
+            
+            // try the reversed polygon
+            polygon.reverse()
+            var witness = await circuit.calculateWitness({ "polygon": polygon }, true)
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(result)));
+            polygon.reverse()
+        }
+    }
+
+    it("Should make sure we can't repeat points in sequence", async () => {
+        await chai.expect(
+            test_permutations([[0,0], [0,0], [5,0], [5,5], [0,5]], 0) // shape is a counterclockwise square
+        ).to.eventually.be.rejectedWith("Assert Failed") // can't do line intersections for lines that are just points
+    })
+
+    it("Should make sure we can't repeat points out of sequence", async () => {
+        await test_permutations([[0,0], [0,10], [0,0], [5,0], [5,5]], 0) // shape is a "b" with a trianglular loop
+    })
+
+    it("Should make sure we can't go back along a line segment", async () => {
+        await test_permutations([[0,0], [0,10], [0,5], [5,5], [5,0]], 0) // shape is a "b" with a square loop
+    })
+
+    it("Should make sure we can't touch the middle of a line segment", async () => {
+        await test_permutations([[0,0], [0,20], [10,15], [0,10], [5,15]], 0) // shape is a "B" with triangular loops
+    })
+
+    it("Should make sure we can't cross a line", async () => {
+        await test_permutations([[0,0], [0,5], [10,5], [5,10], [5,0]], 0) // shape is a fish swimming to the bottom left, made of a square and a triangle
+    })
+    
+    it("Should allow basic convex pentagons", async () => {
+        await test_permutations([[0,0], [0,10], [5,15], [10,10], [10,0]], 1) // shape is a an irregular pentagon in a house shape 
+    })
+
+    it("Should allow concave shapes", async () => {
+        await test_permutations([[0,0], [0,10], [5,5], [10,10], [10,0]], 1) // shape is an "M" with a closed bottom
+    })
+
+    it("Should allow squares with broken up sides", async () => {
+        await test_permutations([[0,0], [0,10], [10,10], [10,0], [5,15]], 0) // shape is a simple sqaure with a vertex on the left hand side
+    })
+
+})
+
 describe("Ray Tracing", function () {
     this.timeout(100000000);
 
@@ -235,6 +299,11 @@ describe("Intersects", function () {
 
     it("Should recognise non intersections", async () => {
         var cases = [
+            // debug cases
+            [
+                [[0,0], [0,10]],
+                [[5,5], [10,10]],
+            ],
             // diagonal lines
             [
                 // parallel
@@ -256,7 +325,7 @@ describe("Intersects", function () {
                 // t-shaped
                 [[0,10], [10,10]],
                 [[11,0], [11,15]],
-            ]
+            ],
         ]
         await test_transformations(cases, 0)
     })
@@ -302,7 +371,7 @@ describe("Intersects", function () {
                 [[11,10], [2435,10]],
             ],
         ]
-        await test_transformations(cases, 1)
+        await test_transformations(cases, 0)
     })
 })
 

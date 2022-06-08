@@ -177,18 +177,18 @@ template Intersects(grid_bits) {
     signal general_intersection <== (orientation[0].out - orientation[1].out) * (orientation[2].out - orientation[3].out);
 
     // Handle special case: if a point is colinear with the other line, and it lies on that line, then the line segments intersect
-    signal on_line_intersection[4];
+    signal not_special_case[4];
     for (var i=0; i<4; i++) {
-        on_line_intersection[i] <== orientation[i].out + onSegment[i].out;
+        not_special_case[i] <== orientation[i].out + 1 - onSegment[i].out; // 0 if we're collinear and within the appropriate range
     }
-    signal sc1 <== on_line_intersection[0] * on_line_intersection[1];
-    signal sc2 <== on_line_intersection[2] * on_line_intersection[3];
-    signal not_special_case <== sc1 * sc2;
+    signal sc1 <== not_special_case[0] * not_special_case[1];
+    signal sc2 <== not_special_case[2] * not_special_case[3];
+    signal no_special_case <== sc1 * sc2;
 
     // Final result
     component not_general_intersection = IsZero();
     not_general_intersection.in <== general_intersection;
-    signal not_out <== not_general_intersection.out * not_special_case;
+    signal not_out <== not_general_intersection.out * no_special_case;
 
     component negate = IsZero();
     negate.in <== not_out;
@@ -311,12 +311,93 @@ template Order(grid_bits) {
 
 /*
 Returns 1 if a polygon is simple and non-degenerate, 0 otherwise.
+Brute force algorithm. TODO: optimise
 */
 template SimplePolygon(n, grid_bits) {
     signal input polygon[n][2];
     signal output out;
 
     // Make sure none of the lines intersect, except two adjacent lines, where we just require that p3 can't be on the segment p1p2
+
+    // Make sure no two lines intersect, except if they're adjacent, since two adjacent lines share a point and necessarily intersect
+    var c = (n-2)*(n-1)/2 - 1;  // triangle number for n-2 minus 1
+    /*
+    To show which intersections should be calculated let's make a table of the n*n possible intersections and exclude those which are invalid or unnecessary
+
+        1   2   3   4   5 
+    1   e   +   y   y   - 
+    2   -   e   +   y   y
+    3   r   -   e   +   y
+    4   r   r   -   e   + 
+    5   +   r   r   -   e 
+
+    y means we calculate it
+    e means we don't calcualte it becuase the lines are equal
+    + means we don't calculate it because line 1 is one greater than line 2
+    - means we don't calculate it because line 1 is one less than line 2
+    r means we don't calculate it because it would be repeated work
+
+    Therefore the number of ys is (n-2)*(n-1)/2-1
+    */
+    component intersects[c];
+    component hasNoIntersection = MultiplierN(c);
+    signal notIntersects[c];
+    var index = 0;
+    for (var i=0; i<n; i++) {
+        for (var j=0; j<n; j++) {
+            if (j != i && // we don't compare a line to itself
+                (j+1)%n != i && // we don't compare a line to the one before it, since they share a point
+                (i+1)%n != j && // we don't compare a line to the one after it, since they share a point
+                i < j // we don't need to calculate the same intersection twice
+            ) {
+                intersects[index] = Intersects(grid_bits);
+                intersects[index].line1[0][0] <== polygon[i][0];
+                intersects[index].line1[0][1] <== polygon[i][1];
+                intersects[index].line1[1][0] <== polygon[(i+1)%n][0];
+                intersects[index].line1[1][1] <== polygon[(i+1)%n][1];
+
+                intersects[index].line2[0][0] <== polygon[j][0];
+                intersects[index].line2[0][1] <== polygon[j][1];
+                intersects[index].line2[1][0] <== polygon[(j+1)%n][0];
+                intersects[index].line2[1][1] <== polygon[(j+1)%n][1];
+
+                notIntersects[index] <== (intersects[index].out - 1) * (-1);
+                hasNoIntersection.in[index] <== notIntersects[index];
+                index++;
+            }
+        }
+    }
+
+    // Make sure vertices adjacent to each line is not on the line
+    component onSegment[n*2];
+    signal notOnSegment[n*2];
+    component notOnAnySegment = MultiplierN(n*2);
+    for (var i=0; i<n; i++) { // for every line
+        // make sure the next vertex (with wraparound) is not on the current segment
+        onSegment[2*i] = OnSegment(grid_bits);
+        onSegment[2*i].line[0][0] <== polygon[i][0];
+        onSegment[2*i].line[0][1] <== polygon[i][1];
+        onSegment[2*i].line[1][0] <== polygon[(i+1)%n][0];
+        onSegment[2*i].line[1][1] <== polygon[(i+1)%n][1];
+        onSegment[2*i].point[0] <== polygon[(i+2)%n][0];
+        onSegment[2*i].point[1] <== polygon[(i+2)%n][1];
+
+        notOnSegment[2*i] <== (onSegment[2*i].out - 1) * (-1);
+        notOnAnySegment.in[2*i] <== notOnSegment[2*i];
+
+        // make sure the current vertex is not on the next line
+        onSegment[2*i+1] = OnSegment(grid_bits);
+        onSegment[2*i+1].line[0][0] <== polygon[(i+1)%n][0];
+        onSegment[2*i+1].line[0][1] <== polygon[(i+1)%n][1];
+        onSegment[2*i+1].line[1][0] <== polygon[(i+2)%n][0];
+        onSegment[2*i+1].line[1][1] <== polygon[(i+2)%n][1];
+        onSegment[2*i+1].point[0] <== polygon[i][0];
+        onSegment[2*i+1].point[1] <== polygon[i][1];
+
+        notOnSegment[2*i+1] <== (onSegment[2*i+1].out - 1) * (-1);
+        notOnAnySegment.in[2*i+1] <== notOnSegment[2*i+1];
+    }
+    out <== notOnAnySegment.out * hasNoIntersection.out;
 }
 
 // From https://docs.circom.io/more-circuits/more-basic-circuits/#extending-our-multiplier-to-n-inputs
