@@ -19,10 +19,10 @@ describe("Simple Polygon", function () {
 
     var circuit;
     this.beforeAll(async () => {
-        var filepath = path.join(__dirname, "Simple.circom")
+        var filepath = path.join(__dirname, "Simple5.circom")
         circuit = await wasm_tester(filepath);
         await circuit.loadConstraints();
-        // assert.equal(circuit.constraints.length, 4); // TODO: verify that this is expected
+        assert.equal(circuit.constraints.length, 22009); // TODO: verify that this is expected
     })
 
     var test_permutations = async (polygon, result) => {
@@ -89,7 +89,13 @@ describe("Ray Tracing", function () {
         var filepath = path.join(__dirname, "RayTracing4.circom")
         circuit = await wasm_tester(filepath);
         await circuit.loadConstraints();
-        // assert.equal(circuit.constraints.length, 4); // TODO: verify that this is expected
+        assert.equal(circuit.constraints.length, 16853); // TODO: verify that this is expected
+        
+        // // measure the size of the circuit
+        // var fp2 = path.join(__dirname, "RayTracing5.circom")
+        // c2 = await wasm_tester(fp2);
+        // await c2.loadConstraints();
+        // assert.equal(c2.constraints.length, 20808); // TODO: verify that this is expected
     })
 
     var f = async (polygon, point) => {
