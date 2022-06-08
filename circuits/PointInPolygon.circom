@@ -122,10 +122,10 @@ template Intersects(grid_bits) {
         Orientation[2] takes inputs line2 and line2[0]
         Orientation[3] takes inputs line2 and line2[1]
 
-    Similarly for onSegment circuits
+    Similarly for inRect circuits
     */
     component orientation[4];
-    component onSegment[4];
+    component inRect[4];
     for (var i=0; i<2; i++) {
         // Orientation with respect to line1
 
@@ -141,13 +141,13 @@ template Intersects(grid_bits) {
         orientation[i].points[2][1] <== line2[i][1];
 
         // Point on line 1
-        onSegment[i] = OnSegment(grid_bits);
-        onSegment[i].line[0][0] <== line1[0][0];
-        onSegment[i].line[0][1] <== line1[0][1];
-        onSegment[i].line[1][0] <== line1[1][0];
-        onSegment[i].line[1][1] <== line1[1][1];
-        onSegment[i].point[0] <== line2[i][0];
-        onSegment[i].point[1] <== line2[i][1];
+        inRect[i] = InRect(grid_bits);
+        inRect[i].line[0][0] <== line1[0][0];
+        inRect[i].line[0][1] <== line1[0][1];
+        inRect[i].line[1][0] <== line1[1][0];
+        inRect[i].line[1][1] <== line1[1][1];
+        inRect[i].point[0] <== line2[i][0];
+        inRect[i].point[1] <== line2[i][1];
 
         // Orientation with respect to line2
         orientation[i+2] = Orientation(grid_bits);
@@ -162,13 +162,13 @@ template Intersects(grid_bits) {
         orientation[i+2].points[2][1] <== line1[i][1];
 
         // Point on line 2
-        onSegment[i+2] = OnSegment(grid_bits);
-        onSegment[i+2].line[0][0] <== line2[0][0];
-        onSegment[i+2].line[0][1] <== line2[0][1];
-        onSegment[i+2].line[1][0] <== line2[1][0];
-        onSegment[i+2].line[1][1] <== line2[1][1];
-        onSegment[i+2].point[0] <== line1[i][0];
-        onSegment[i+2].point[1] <== line1[i][1];
+        inRect[i+2] = InRect(grid_bits);
+        inRect[i+2].line[0][0] <== line2[0][0];
+        inRect[i+2].line[0][1] <== line2[0][1];
+        inRect[i+2].line[1][0] <== line2[1][0];
+        inRect[i+2].line[1][1] <== line2[1][1];
+        inRect[i+2].point[0] <== line1[i][0];
+        inRect[i+2].point[1] <== line1[i][1];
     }
 
     // If both points of each line segments are on different sides (i.e., have different orientations wrt) the other line, the
@@ -176,10 +176,11 @@ template Intersects(grid_bits) {
     // This expression is 0 (false) if the orientations of both points of either line segments are equal.
     signal general_intersection <== (orientation[0].out - orientation[1].out) * (orientation[2].out - orientation[3].out);
 
-    // Handle special case: if a point is colinear with the other line, and it lies on that line, then the line segments intersect
+    // Handle special case: if a point is collinear with the other line, and it lies on that line, then the line segments intersect
+    // TODO: simplify by using an OnSegment component, which is equivalent to the below, but will require repeated computation of orientation.
     signal not_special_case[4];
     for (var i=0; i<4; i++) {
-        not_special_case[i] <== orientation[i].out + 1 - onSegment[i].out; // 0 if we're collinear and within the appropriate range
+        not_special_case[i] <== orientation[i].out + 1 - inRect[i].out; // 0 if we're collinear and within the appropriate range
     }
     signal sc1 <== not_special_case[0] * not_special_case[1];
     signal sc2 <== not_special_case[2] * not_special_case[3];
@@ -249,9 +250,9 @@ template Orientation(grid_bits) {
 }
 
 /*
-Given 3 colinear points, the function checks if point lies on line segment line[0]line[1]
+Given 3 collinear points, the function checks if point lies on line segment line[0]line[1]
 */
-template OnSegment(grid_bits) {
+template InRect(grid_bits) {
     signal input line[2][2];
     signal input point[2];
     signal output out;
@@ -277,7 +278,7 @@ template OnSegment(grid_bits) {
     signal on_x_projection <== aboveMinX.out * belowMaxX.out;
 
     // Check that the point is on the y-projection
-        component aboveMinY = LessEqThan(grid_bits);
+    component aboveMinY = LessEqThan(grid_bits);
     aboveMinY.in[0] <== ordered_y.out[0];
     aboveMinY.in[1] <== point[1];
 
@@ -419,6 +420,36 @@ template MultiplierN (N){
 
    }
    out <== comp[N-2].out; 
+}
+
+/*
+Returns 1 if a point is on a line segment, 0 otherwise
+A point is on a line segment if it is collinear (i.e., orientation 0) and within the segments bounding rect
+*/
+template OnSegment(grid_bits) {
+    signal input line[2][2];
+    signal input point[2];
+    signal output out;
+
+    component inRect = InRect(grid_bits);
+    inRect.line[0][0] <== line[0][0];
+    inRect.line[0][1] <== line[0][1];
+    inRect.line[1][0] <== line[1][0];
+    inRect.line[1][1] <== line[1][1];
+    inRect.point[0] <== point[0];
+    inRect.point[1] <== point[1];
+
+    component orientation = Orientation(grid_bits);
+    orientation.points[0][0] <== line[0][0];
+    orientation.points[0][1] <== line[0][1];
+    orientation.points[1][0] <== line[1][0];
+    orientation.points[1][1] <== line[1][1];
+    orientation.points[2][0] <== point[0];
+    orientation.points[2][1] <== point[1];
+
+    component collinear = IsZero();
+    collinear.in <== orientation.out;
+    out <== collinear.out * inRect.out;
 }
 
 template Multiplier2() {

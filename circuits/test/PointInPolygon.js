@@ -73,9 +73,12 @@ describe("Simple Polygon", function () {
     })
 
     it("Should allow squares with broken up sides", async () => {
-        await test_permutations([[0,0], [0,10], [10,10], [10,0], [5,15]], 0) // shape is a simple sqaure with a vertex on the left hand side
+        await test_permutations([[0,0], [0,10], [10,10], [10,0], [5,0]], 1) // shape is a simple sqaure with a vertex on the left hand side
     })
 
+    it("Should allow simple polygons where some vertices sit in other lines' bounding rects", async () => {
+        await test_permutations([[0,0], [10,10], [6,5], [5,4], [4,3]], 1) // shape is a tilted trapezium
+    })
 })
 
 describe("Ray Tracing", function () {
@@ -383,11 +386,78 @@ describe("OnSegment", function () {
         var filepath = path.join(__dirname, "OnSegment.circom")
         circuit = await wasm_tester(filepath);
         await circuit.loadConstraints();
+        // assert.equal(circuit.constraints.length, 206); // TODO: verify that this is expected
+    })
+
+    var line = [[5,5], [10,10]]
+    it("Should accept points on the line segment", async () => {
+        var points = [
+            [5,5],
+            [6,6],
+            [7,7],
+            [8,8],
+            [9,9],
+            [10,10],
+        ]
+
+        for (let i=0; i < points.length; i++) {
+            const point = points[i];
+            var witness = await circuit.calculateWitness({ "line": line, "point": point }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        }
+    })
+
+    it("Should reject non collinear points inside the line's rectangle", async () => {
+        var points = [
+            [5,6],
+            [6,7],
+            [7,8],
+            [6,5],
+            [9,6],
+            [10,9],
+        ]
+
+        for (let i=0; i < points.length; i++) {
+            const point = points[i];
+            var witness = await circuit.calculateWitness({ "line": line, "point": point }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+        }
+    })
+
+    it("Should reject points outside the line's rectangle", async () => {
+        var points = [
+            [0,0], // bottom left
+            [0,7], // left
+            [0,15], // top left
+            [7,15], // top
+            [15,15], // top right
+            [15,7], // right
+            [15,0], // bottom right
+            [7,0], // bottom
+        ]
+
+        for (let i=0; i < points.length; i++) {
+            const point = points[i];
+            var witness = await circuit.calculateWitness({ "line": line, "point": point }, true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+        }
+    })
+})
+
+
+describe("InRect", function () {
+    this.timeout(100000000);
+
+    var circuit;
+    this.beforeAll(async () => {
+        var filepath = path.join(__dirname, "InRect.circom")
+        circuit = await wasm_tester(filepath);
+        await circuit.loadConstraints();
         assert.equal(circuit.constraints.length, 206); // TODO: verify that this is expected
     })
 
     var line = [[5,5], [10,10]]
-    it("Should accpet when the point is on both projections", async () => {
+    it("Should accept when the point is on both projections", async () => {
         var points = [
             [5,5],
             [5,7],
