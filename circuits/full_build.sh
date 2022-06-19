@@ -7,8 +7,8 @@ set -e
 
 # Make sure we have a fresh .build directory for the circuit
 mkdir -p .build
-rm -rf ".build/$1"
-mkdir ".build/$1"
+# rm -rf ".build/$1"
+mkdir -p ".build/$1"
 
 # Compile the circuits
 circom "$1.circom" --r1cs --wasm --sym --c -o ".build/$1" || { echo 'compilation failed' ; exit 1; }
