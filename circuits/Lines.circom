@@ -153,7 +153,7 @@ template Orientation(grid_bits) {
     // Find out whether f is 0
     component isZero = IsZero();
     isZero.in <== f;
-    signal nonZero <== (isZero.out-1)*(-1);
+    signal nonZero <== 1-isZero.out;
 
     // Calculate the orientation
     // nonZero  | isNegative    | Orientation

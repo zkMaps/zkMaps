@@ -56,7 +56,7 @@ template RayTracing(n, grid_bits) {
     // Normalise to 0 or 1
     component isZero = IsZero();
     isZero.in <== mult.out;
-    signal not_on_vertex_line <== (isZero.out-1)*(-1);
+    signal not_on_vertex_line <== 1-isZero.out;
 
     // Count the number of intersections with the ray
     // For each edge, determine whether the ray intersects the edge
@@ -141,7 +141,7 @@ template SimplePolygon(n, grid_bits) {
                 intersects[index].line2[1][0] <== polygon[(j+1)%n][0];
                 intersects[index].line2[1][1] <== polygon[(j+1)%n][1];
 
-                notIntersects[index] <== (intersects[index].out - 1) * (-1);
+                notIntersects[index] <== 1-intersects[index].out;
                 hasNoIntersection.in[index] <== notIntersects[index];
                 index++;
             }
@@ -162,7 +162,7 @@ template SimplePolygon(n, grid_bits) {
         onSegment[2*i].point[0] <== polygon[(i+2)%n][0];
         onSegment[2*i].point[1] <== polygon[(i+2)%n][1];
 
-        notOnSegment[2*i] <== (onSegment[2*i].out - 1) * (-1);
+        notOnSegment[2*i] <== 1-onSegment[2*i].out;
         notOnAnySegment.in[2*i] <== notOnSegment[2*i];
 
         // make sure the current vertex is not on the next line
@@ -174,7 +174,7 @@ template SimplePolygon(n, grid_bits) {
         onSegment[2*i+1].point[0] <== polygon[i][0];
         onSegment[2*i+1].point[1] <== polygon[i][1];
 
-        notOnSegment[2*i+1] <== (onSegment[2*i+1].out - 1) * (-1);
+        notOnSegment[2*i+1] <== 1-onSegment[2*i+1].out;
         notOnAnySegment.in[2*i+1] <== notOnSegment[2*i+1];
     }
     out <== notOnAnySegment.out * hasNoIntersection.out;
