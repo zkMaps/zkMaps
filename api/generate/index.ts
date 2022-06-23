@@ -47,7 +47,7 @@ async function generateCircuitDependencies(circuitName: string, geoFenceCoords: 
   await execProm(`node "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}_js/generate_witness.js" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}_js/${circuitName}.wasm" "${GENERATED_BUILD_PATH}/../template_input.json" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/witness.wtns"`);
 
   // create trusted setup
-  // await execProm(`snarkjs groth16 setup "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}.r1cs" ${PTAU_PATH}/pot12_final.ptau "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}"`);
+  await execProm(`snarkjs groth16 setup "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}.r1cs" "${PTAU_PATH}/pot12_final.ptau" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}.zkey"`);
   // await execProm(`snarkjs zkey export verificationkey "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/${circuitName}_0001.zkey" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/verification_key.json"`);
   // await execProm(`snarkjs groth16 prove "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/${circuitName}_0001.zkey" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/witness.wtns" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/proof.json" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/public.json"`);
 }
