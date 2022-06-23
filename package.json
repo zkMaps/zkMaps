@@ -2,7 +2,7 @@
   "name": "zk-maps-core",
   "scripts": {
     "start": "vercel dev",
-    "deploy" : "vercel deploy --prod"
+    "deploy": "vercel deploy --prod"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.5",
@@ -17,10 +17,11 @@
     "@typescript-eslint/parser": "^4.33.0",
     "chai": "^4.3.6",
     "dotenv": "^10.0.0",
-    "eslint": "^7.32.0",
+    "eslint": "^8.17.0",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.1",
     "eslint-plugin-promise": "^5.2.0",
@@ -38,8 +39,6 @@
   },
   "dependencies": {
     "@types/express": "^4.17.13",
-    "circom": "^0.5.46",
-    "circom1": "npm:circom@^0.5.46",
     "circomlib": "^2.0.3",
     "hardhat-circom": "^1.2.0",
     "vercel": "^24.2.4"
