@@ -28,8 +28,17 @@ const mainnetGwei = 84;
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
-const config: HardhatUserConfig = {
+// const config: HardhatUserConfig = {
+const config = {
   solidity: "0.6.11",
+  circom: {
+    circuits: [
+      {
+        // (optional) The circom version used to compile circuits (1 or 2), defaults to 2
+        version: 2,
+      },
+    ],
+  },
   networks: {
     mainnet: {
       url: `https://mainnet.infura.io/v3/${INFURA_MAINNET_KEY}`, // <---- YOUR INFURA ID! (or it won't work)
