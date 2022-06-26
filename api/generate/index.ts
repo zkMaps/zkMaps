@@ -40,17 +40,12 @@ async function generateCircuitDependencies(circuitName: string, geoFenceCoords: 
     circuitFileContent,
   );
 
-  // compile circuit
-  await execProm(`circom "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}.circom" --r1cs --wasm --sym --c -o "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}"`);
-
-  // build witness
-  await execProm(`node "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}_js/generate_witness.js" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}_js/${circuitName}.wasm" "${GENERATED_BUILD_PATH}/../template_input.json" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/witness.wtns"`);
-
-  // create trusted setup
-  await execProm(`snarkjs groth16 setup "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}.r1cs" "${PTAU_PATH}/pot12_final.ptau" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}.zkey"`);
-  // await execProm(`snarkjs zkey export verificationkey "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/${circuitName}_0001.zkey" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/verification_key.json"`);
-  // await execProm(`snarkjs groth16 prove "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/${circuitName}_0001.zkey" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/witness.wtns" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/proof.json" "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}/public.json"`);
+  // compile circuit (not generating .sym, .cpp version)
+  await execProm(`circom "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}/${circuitName}.circom" --r1cs --wasm  -o "${GENERATED_BUILD_CIRCUIT_FOLDER_PATH}"`);
+  
+  // [PR❗]: should we generate and delete the files, since 
 }
+
 // TODO:
 // - save circuits to db with associated user
-// - user management
+// - user management - use address as key to store circuit
