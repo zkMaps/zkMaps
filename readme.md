@@ -18,6 +18,8 @@ https://www.notion.so/4fb730fe3eab4c5193120e0964990e19?v=ba4ff15f168f46a5be9c043
 
 ## Circom
 
+First, install circom 2.0.4. [Steps](https://docs.circom.io/getting-started/installation/#installing-circom).
+
 steps: (https://docs.circom.io/getting-started/proving-circuits/)
 1. `cd circuits`
 2. `circom init.circom --r1cs --wasm --sym --c`
