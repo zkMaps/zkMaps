@@ -36,7 +36,6 @@
     "chai-as-promised": "^7.1.1",
     "circom_tester": "zkMaps/circom_tester",
     "circomlib": "^2.0.3",
-    "hardhat-circom": "^3.3.0",
     "snarkjs": "^0.4.19",
     "tmp-promise": "^3.0.3"
   },
