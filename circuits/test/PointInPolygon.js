@@ -29,22 +29,21 @@ describe("Simple Polygon", function () {
 
   const test_permutations = async (polygon, result) => {
     // cycle points around
-    i = 0;
+    let i = 0;
     while (i < 5) {
       i++;
       polygon.unshift(polygon.pop());
-      var witness = await circuit.calculateWitness({ polygon: polygon }, true);
+      const witness = await circuit.calculateWitness({ polygon }, true);
       assert(Fr.eq(Fr.e(witness[1]), Fr.e(result)));
 
       // try the reversed polygon
       polygon.reverse();
-      var witness = await circuit.calculateWitness({ polygon: polygon }, true);
-      assert(Fr.eq(Fr.e(witness[1]), Fr.e(result)));
-      polygon.reverse();
+      const reversedWitness = await circuit.calculateWitness({ polygon }, true);
+      assert(Fr.eq(Fr.e(reversedWitness[1]), Fr.e(result)));
     }
   };
 
-  it("Should make sure we can't repeat points in sequence", async () => {
+  it("Should fail for repeated points in sequence", async () => {
     await chai
       .expect(
         test_permutations(
@@ -61,7 +60,7 @@ describe("Simple Polygon", function () {
       .to.eventually.be.rejectedWith("Assert Failed"); // can't do line intersections for lines that are just points
   });
 
-  it("Should make sure we can't repeat points out of sequence", async () => {
+  it("Should failed for repeated points out of sequence", async () => {
     await test_permutations(
       [
         [0, 0],
@@ -74,7 +73,7 @@ describe("Simple Polygon", function () {
     ); // shape is a "b" with a trianglular loop
   });
 
-  it("Should make sure we can't go back along a line segment", async () => {
+  it("Should fail when moving back along a line segment", async () => {
     await test_permutations(
       [
         [0, 0],
@@ -87,7 +86,7 @@ describe("Simple Polygon", function () {
     ); // shape is a "b" with a square loop
   });
 
-  it("Should make sure we can't touch the middle of a line segment", async () => {
+  it("Should fail when touching the middle of a line segment", async () => {
     await test_permutations(
       [
         [0, 0],
@@ -100,7 +99,7 @@ describe("Simple Polygon", function () {
     ); // shape is a "B" with triangular loops
   });
 
-  it("Should make sure we can't cross a line", async () => {
+  it("Should fail for line crossing", async () => {
     await test_permutations(
       [
         [0, 0],
@@ -175,20 +174,14 @@ describe("Ray Tracing", function () {
     circuit = await wasm_tester(filepath);
     await circuit.loadConstraints();
     assert.equal(circuit.constraints.length, 16853); // TODO: verify that this is expected
-
-    // // measure the size of the circuit
-    // var fp2 = path.join(__dirname, "RayTracing5.circom")
-    // c2 = await wasm_tester(fp2);
-    // await c2.loadConstraints();
-    // assert.equal(c2.constraints.length, 20808); // TODO: verify that this is expected
   });
 
-  const f = async (polygon, point) => {
-    await circuit.calculateWitness({ polygon: polygon, point: point }, true);
+  const calculateWitness = async (polygon, point) => {
+    await circuit.calculateWitness({ polygon, point }, true);
   };
 
-  const max = Fr.e("4294967295");
-  const max_plus_1 = Fr.e("4294967296");
+  const max = Fr.e("4294967295"); // 2^32 - 1
+  const max_plus_1 = Fr.e("4294967296"); // 2^32, outside allowed range
   it("Should fail to build witness for vertices outside the range", async () => {
     const polygon = [
       [10, 10],
@@ -204,24 +197,24 @@ describe("Ray Tracing", function () {
         // passing for 2^32-1
         const p = JSON.parse(JSON.stringify(polygon));
         p[i][j] = max;
-        await f(p, [1, 1]);
+        await calculateWitness(p, [1, 1]);
 
         // failing for 2^32
         p[i][j] = max_plus_1;
         await chai
-          .expect(f(p, [1, 1]))
+          .expect(calculateWitness(p, [1, 1]))
           .to.eventually.be.rejectedWith("Assert Failed");
       }
 
       // y can be 0
       const p = JSON.parse(JSON.stringify(polygon));
       p[i][1] = 0;
-      await f(p, [1, 1]);
+      await calculateWitness(p, [1, 1]);
 
       // x can't be 0
       p[i][0] = 0;
       await chai
-        .expect(f(p, [1, 1]))
+        .expect(calculateWitness(p, [1, 1]))
         .to.eventually.be.rejectedWith("Assert Failed");
     }
   });
@@ -233,16 +226,16 @@ describe("Ray Tracing", function () {
       [15, 15],
       [15, 10],
     ];
-    await f(p, [1, 1]);
-    await f(p, [max, max]);
+    await calculateWitness(p, [1, 1]);
+    await calculateWitness(p, [max, max]);
     await chai
-      .expect(f(p, [max_plus_1, max]))
+      .expect(calculateWitness(p, [max_plus_1, max]))
       .to.eventually.be.rejectedWith("Assert Failed");
     await chai
-      .expect(f(p, [max, max_plus_1]))
+      .expect(calculateWitness(p, [max, max_plus_1]))
       .to.eventually.be.rejectedWith("Assert Failed");
     await chai
-      .expect(f(p, [max_plus_1, max_plus_1]))
+      .expect(calculateWitness(p, [max_plus_1, max_plus_1]))
       .to.eventually.be.rejectedWith("Assert Failed");
   });
 
