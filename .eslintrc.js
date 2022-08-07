@@ -1,3 +1,4 @@
+/** @type {import('eslint').Linter.Config} */
 module.exports = {
   env: {
     browser: false,
@@ -5,20 +6,41 @@ module.exports = {
     mocha: true,
     node: true,
   },
-  plugins: ["@typescript-eslint"],
   extends: [
-    "standard",
-    "plugin:prettier/recommended",
+    "eslint:recommended",
+    "plugin:eslint-comments/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
     "plugin:node/recommended",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended",
   ],
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 12,
-  },
+  parserOptions: { project: "./tsconfig.json" },
+  settings: { "import/resolver": { typescript: { project: "tsconfig.json" } } },
   rules: {
-    "node/no-unsupported-features/es-syntax": [
-      "error",
-      { ignores: ["modules"] },
-    ],
+    "no-shadow": "error",
+    "node/no-missing-import": "off",
+    "node/no-unpublished-import": "off",
+    "node/no-unpublished-require": "off",
+    "eslint-comments/no-unused-disable": "error",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { ignoreRestSiblings: true }],
+    "import/no-extraneous-dependencies": ["error", { devDependencies: true }],
+    "node/no-unsupported-features/es-syntax": ["error", { ignores: ["modules"] }],
   },
+  overrides: [
+    {
+      files: ["**/*.{test,spec}.{ts,js}"],
+      extends: [
+        "plugin:mocha/recommended",
+        "plugin:chai-expect/recommended",
+        "plugin:chai-friendly/recommended",
+      ],
+      rules: {
+        "func-names": "off",
+        "mocha/no-mocha-arrows": "off",
+      },
+    },
+  ],
 };
