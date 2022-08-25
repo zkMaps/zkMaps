@@ -41,7 +41,7 @@ describe("Simple Polygon", function () {
     circuit = await _checkConstrainst("Simple5.circom", EXPECTED_CONSTRAINTS_FOR_5_VERTICS);
   });
 
-  it("Should make sure we can't repeat points in sequence", async () => {
+  it("Should fail for repeated points in sequence", async () => {
     const CLOCKWISE_SQUARE = [
       [0, 0],
       [0, 0],
@@ -52,7 +52,7 @@ describe("Simple Polygon", function () {
     await chai.expect(_test_permutations(CLOCKWISE_SQUARE, 0)).to.eventually.be.rejectedWith("Assert Failed"); // can't do line intersections for lines that are just points
   });
 
-  it("Should make sure we can't repeat points out of sequence", async () => {
+  it("Should failed for repeated points out of sequence", async () => {
     const b_SHAPE_WITH_TRIANGLE_LOOP = [
       [0, 0],
       [0, 10],
@@ -63,7 +63,7 @@ describe("Simple Polygon", function () {
     await _test_permutations(b_SHAPE_WITH_TRIANGLE_LOOP, 0);
   });
 
-  it("Should make sure we can't go back along a line segment", async () => {
+  it("Should fail when moving back along a line segment", async () => {
     const b_SHAPE_WITH_SQUARE_LOOP = [
       [0, 0],
       [0, 10],
@@ -75,7 +75,7 @@ describe("Simple Polygon", function () {
     await _test_permutations(b_SHAPE_WITH_SQUARE_LOOP, 0);
   });
 
-  it("Should make sure we can't touch the middle of a line segment", async () => {
+  it("Should fail when touching the middle of a line segment", async () => {
     const B_SHAPE_WITH_TRIANGULAR_LOOPS = [
       [0, 0],
       [0, 10],
@@ -155,8 +155,8 @@ describe("Ray Tracing", function () {
     await circuit.calculateWitness({ polygon: polygon, point: point }, true);
   };
 
-  const max = Fr.e("4294967295");
-  const max_plus_1 = Fr.e("4294967296");
+  const max = Fr.e("4294967295"); // 2^32 - 1
+  const max_plus_1 = Fr.e("4294967296"); // 2^32, outside allowed range
   it("Should fail to build witness for vertices outside the range", async () => {
     const polygon = [
       [10, 10],

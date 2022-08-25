@@ -13,3 +13,6 @@ circuits/.build
 .DS_Store*
 
 .vercel
+.vscode
+
+*.build
