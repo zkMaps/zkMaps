@@ -19,7 +19,7 @@ node ".build/$1/$1_js/generate_witness.js" ".build/$1/$1_js/$1.wasm" "$1_input.j
 echo "Witness built"
 
 # Create the trusted setup
-snarkjs groth16 setup ".build/$1/$1.r1cs" ptau/pot12_final.ptau ".build/$1/$1_0001.zkey" || { echo 'ptau failed' ; exit 1; }
+snarkjs groth16 setup ".build/$1/$1.r1cs" ./ptau/powersOfTau28_hez_final_16.ptau ".build/$1/$1_0001.zkey" || { echo 'ptau failed' ; exit 1; }
 snarkjs zkey export verificationkey ".build/$1/$1_0001.zkey" ".build/$1/verification_key.json" || { echo 'ptau failed' ; exit 1; }
 snarkjs groth16 prove ".build/$1/$1_0001.zkey" ".build/$1/witness.wtns" ".build/$1/proof.json" ".build/$1/public.json" || { echo 'proof generation failed' ; exit 1; }
 # echo "Proof built"
