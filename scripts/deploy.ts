@@ -14,8 +14,12 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Verifier = await ethers.getContractFactory("Verifier");
+  const Verifier = await ethers.getContractFactory(
+    "VerifierRayTracing6Private"
+  );
   const verifier = await Verifier.deploy();
+
+  // TODO: Add tags
 
   await verifier.deployed();
 

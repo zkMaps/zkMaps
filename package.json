@@ -36,6 +36,7 @@
     "chai-as-promised": "^7.1.1",
     "circom_tester": "0.0.11",
     "circomlib": "^2.0.3",
+    "hardhat-deploy": "^0.11.12",
     "snarkjs": "^0.4.19",
     "tmp-promise": "^3.0.3"
   },

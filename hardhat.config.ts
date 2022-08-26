@@ -40,7 +40,7 @@ const config: HardhatUserConfig = {
       },
     },
     ropsten: {
-      url: process.env.ROPSTEN_URL || "",
+      url: process.env.ROPSTEN_URL || "https://ropsten.infura.io/v3/",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
@@ -86,6 +86,9 @@ const config: HardhatUserConfig = {
         initialIndex: 3,
       },
     },
+  },
+  paths: {
+    // sources: "",
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
