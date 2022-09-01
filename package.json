@@ -23,6 +23,7 @@
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.5.4",
     "hardhat": "^2.8.4",
+    "hardhat-deploy": "^0.11.12",
     "hardhat-gas-reporter": "^1.0.7",
     "prettier": "^2.5.1",
     "prettier-plugin-solidity": "^1.0.0-beta.13",
@@ -36,7 +37,6 @@
     "chai-as-promised": "^7.1.1",
     "circom_tester": "0.0.11",
     "circomlib": "^2.0.3",
-    "hardhat-deploy": "^0.11.12",
     "snarkjs": "^0.4.19",
     "tmp-promise": "^3.0.3"
   },

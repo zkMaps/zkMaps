@@ -6,13 +6,22 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import "hardhat-deploy";
 
 dotenv.config();
 
 const {
   MNEMONIC = "test test test test test test test test test test test fake",
   INFURA_MAINNET_KEY,
+  PRIVATE_KEY,
 } = process.env;
+
+const testAccounts = PRIVATE_KEY
+  ? [PRIVATE_KEY]
+  : {
+      mnemonic: MNEMONIC,
+      count: 10,
+    };
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -35,30 +44,22 @@ const config: HardhatUserConfig = {
       url: `https://mainnet.infura.io/v3/${INFURA_MAINNET_KEY}`, // <---- YOUR INFURA ID! (or it won't work)
       //      url: "https://speedy-nodes-nyc.moralis.io/XXXXXXXXXXXXXXXXXXXXXXXXX/eth/mainnet", // <---- YOUR MORALIS ID! (not limited to infura)
       gasPrice: mainnetGwei * 1000000000,
-      accounts: {
-        mnemonic: MNEMONIC,
-      },
+      // accounts: {
+      //   mnemonic: MNEMONIC,
+      // },
     },
     ropsten: {
       url: process.env.ROPSTEN_URL || "https://ropsten.infura.io/v3/",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts: testAccounts,
     },
     development: {
       url: "http://127.0.0.1:8545",
-      accounts: {
-        mnemonic: MNEMONIC,
-        count: 10,
-      },
+      accounts: testAccounts,
     },
     mumbai: {
       url: "https://rpc-mumbai.maticvigil.com",
       chainId: 80001,
-      accounts: {
-        mnemonic: MNEMONIC,
-        count: 10,
-        initialIndex: 3,
-      },
+      accounts: testAccounts,
     },
     polygon: {
       url: "https://rpc-mainnet.matic.today",
@@ -87,8 +88,11 @@ const config: HardhatUserConfig = {
       },
     },
   },
+  namedAccounts: {
+    deployer: { default: 0 },
+  },
   paths: {
-    // sources: "",
+    sources: "circuits/",
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

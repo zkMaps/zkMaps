@@ -5,13 +5,13 @@ const func: DeployFunction = async ({
   getNamedAccounts,
 }) => {
   const { deployer } = await getNamedAccounts();
-  await deploy("VerifierRayTracing6Private", {
-    args: [],
+  await deploy("VerifierRayTracing6", {
     from: deployer,
     log: true,
+    waitConfirmations: 2,
   });
 };
 
-func.tags = ["Verifier"];
+func.tags = ["VerifierRayTracing6"];
 
 export default func;
