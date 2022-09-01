@@ -6,14 +6,14 @@ set -e
 # $1 is the filename for the circuit
 
 # Make sure we have a fresh .build directory for the circuit
-mkdir -p .build/groth16
+mkdir -p ".build/groth16"
 rm -rf ".build/groth16/$1"
-mkdir ".build/groth16/$1"
+mkdir -p ".build/groth16/$1"
 
 # Make sure we have a fresh 'contracts' directory for the new compiled contract
 mkdir -p contracts/groth16
 rm -rf "contracts/groth16/$1"
-mkdir "contracts/groth16/$1"
+mkdir -p "contracts/groth16/$1"
 
 # Compile the circuits
 circom "$1.circom" --r1cs --wasm --sym --c -o ".build/groth16/$1" || { echo 'compilation failed' ; exit 1; }
@@ -39,5 +39,5 @@ snarkjs groth16 verify ".build/groth16/$1/verification_key.json" ".build/groth16
 elapsed=$(( SECONDS - start_time ))
 echo "Verification successful in $elapsed seconds"
 
-snarkjs zkey export solidityverifier "./.build/groth16/$1/$1_0001.zkey" "contracts/groth16/$1/Verifier_$1.sol" || { echo 'proof generation contract failed' ; exit 1; }
+snarkjs zkey export solidityverifier "./.build/groth16/$1/$1_0001.zkey" "contracts/groth16/$1/Verifier$1.sol" || { echo 'proof generation contract failed' ; exit 1; }
 echo "Verifier contract built"
