@@ -1,99 +1,46 @@
-## Notion
-https://www.notion.so/4fb730fe3eab4c5193120e0964990e19?v=ba4ff15f168f46a5be9c04352db18827
+# zkMaps
 
-## Contracts details
-- **in Colorado** Verifier.sol deployed to eth-mainnet: `0x2c2b1601ccb2e2d40812de8168737cc44a63ed61` 
-- [mumbai polygon scan](https://mumbai.polygonscan.com/address/0x2c2b1601ccb2e2d40812de8168737cc44a63ed61)
-- **in Colorado** Verifier.sol deployed to polygon-mumabi: `0xB5217d3E37F12F89138113534953E1b9583e4F3B` 
-- [mumbai polygon scan](https://mumbai.polygonscan.com/address/0xB5217d3E37F12F89138113534953E1b9583e4F3B)
-- initial Verifier.sol deployed to harmony-testnet: `0x801d67C424709428Ed0eCf5507ddA3040Cd84835` 
-- [harmony testnet scan](https://explorer.pops.one/address/0x801d67C424709428Ed0eCf5507ddA3040Cd84835?activeTab=2)
+zkMaps is a tool to verify if a user is within a certain geographic area without giving away their exact location. 
+This repository is composed of the circuits which enable the deployment of a verifier contract and the creation of the location proof by the end user. 
 
+## Roadmap
+https://shrouded-fruitadens-1ef.notion.site/ZKmaps-roadmap-epics-18196ee96b4f4a2982fa1ec05f1c920e
 
-## Using the build script
-
-1. `npm install`
-2. `cd circuits`
-3.  `./full_build.sh AtEthDenver` to test the environment with a basic circuit
-
-## Circom
-
-First, install circom 2.0.4. [Steps](https://docs.circom.io/getting-started/installation/#installing-circom).
-
-steps: (https://docs.circom.io/getting-started/proving-circuits/)
-1. `cd circuits`
-2. `circom init.circom --r1cs --wasm --sym --c`
-3. `cd init_js`
-4. confir `input.json` is in the foler `{a:1, b:33}`
-5. `node generate_witness.js init.wasm input.json ../witness.wtns` 
--- powet of TAU - encryption
-6. `snarkjs powersoftau new bn128 12 pot12_0000.ptau -v`
-7. `snarkjs powersoftau contribute pot12_0000.ptau pot12_0001.ptau --name="First contribution" -v` // 'ABC' enthropy - secret
--- phase 2
-8. `snarkjs powersoftau prepare phase2 pot12_0001.ptau pot12_final.ptau -v`
-9. `snarkjs groth16 setup init.r1cs pot12_final.ptau init.zkey`
-10. `snarkjs zkey contribute init.zkey init.zkey --name="1st Contributor Name" -v`
-11. `snarkjs zkey export verificationkey init.zkey verification_key.json`
--- generating proof
-12. `snarkjs groth16 prove init.zkey witness.wtns proof.json public.json`
--- verify proof
-13. `snarkjs groth16 verify verification_key.json public.json proof.json`
--- export contract verifier
-14. `snarkjs zkey export solidityverifier init.zkey ../contracts/Verifier.sol`
-
-
-## api proof generation
+## API proof generation
 - end point: https://zk-maps.vercel.app
 - monitor: https://vercel.com/zkmaps/zk-maps/GTNfdqtqdmYRJKUcxNcWC6xAXRJp
-# Advanced Sample Hardhat Project
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+## Compiling and deploying circuits
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+### 1. Compiling .circom circuits
 
-Try running some of the following tasks:
+A. Install dependencies
+```npm install```
+B. Go to the circuits directory:
+```cd circuits```
+C. Compile circuits:
+```./full_build.sh <CIRCUIT-NAME>```
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
+### 2. Create proof on client
 
-# Etherscan verification
+You can create proofs in a CLI (as explained in the `circuits/readme.md`) or in a client like our implementation at [https://zkmaps.vercel.app/](https://zkmaps.vercel.app/) (can find the implementation at [github.com/zkMaps/client](https://github.com/zkMaps/client)). 
 
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
+To create proofs on a web client, circuit files must be available. We are currently using IPFS to upload and access `.zkey` and `.wasm` files.
 
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
+### 3. Deploy smart contract
 
-```shell
-hardhat run --network ropsten scripts/sample-script.ts
-```
+A. We recommend installing [hh](https://hardhat.org/hardhat-runner/docs/guides/command-line-completion) as a global dependency.
+```npm install --global hardhat-shorthand```
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
+B. Then run:
+```hh deploy --network mumbai```
 
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
+You will be able to access ABI and contract address from `deployments/<NETWORK>/Verifier<CIRCUIT-NAME>.json`. This information will be needed by the client to parse data from the contract.
 
-# Performance optimizations
+## Contracts details
+### Private Zones 
 
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+### Public Zones 
+- VerifierRayTracing6  `mumbai` [0xD2EFE7Ca45b30F1046A134Ff67d0179a66CFf84F](https://mumbai.polygonscan.com/address/0xD2EFE7Ca45b30F1046A134Ff67d0179a66CFf84F)
 
-# Formatting Coordinates
 
-There are no negative numbers in circom, so we add 90 to latitude and 180 to longitude, so that the numbers are between 0-180 for latitude, and 0-360 for longitude.
-There are no floats in circom either, but we have different precision requirements for AtEthDenver and InColorado, vs in the treasure hunt.
-For AtEthDenver/InColorado multiply by 10^14. For the treasure hunt multiply by 1000 and truncate the rest of the digits.
