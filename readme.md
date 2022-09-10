@@ -32,8 +32,15 @@ To create proofs on a web client, circuit files must be available. We are curren
 A. We recommend installing [hh](https://hardhat.org/hardhat-runner/docs/guides/command-line-completion) as a global dependency.
 ```npm install --global hardhat-shorthand```
 
-B. Then run:
+B. Set a deployment script in the `deploy` directory
+
+C. Set your deployer address' MNEMONIC or Private Key at `.env`. You can duplicate `.env.template` to do so.
+
+D. Ultimately run the command below. Make sure to do so from the root directory.
+
 ```hh deploy --network mumbai```
+
+
 
 You will be able to access ABI and contract address from `deployments/<NETWORK>/Verifier<CIRCUIT-NAME>.json`. This information will be needed by the client to parse data from the contract.
 
@@ -41,6 +48,6 @@ You will be able to access ABI and contract address from `deployments/<NETWORK>/
 ### Private Zones 
 
 ### Public Zones 
-- VerifierRayTracing6  `mumbai` [0xD2EFE7Ca45b30F1046A134Ff67d0179a66CFf84F](https://mumbai.polygonscan.com/address/0xD2EFE7Ca45b30F1046A134Ff67d0179a66CFf84F)
+- VerifierRayTracing6  `mumbai` [0x0a23af15ce2642689aF312B8A570534731285E83](https://mumbai.polygonscan.com/address/0x0a23af15ce2642689aF312B8A570534731285E83)
 
 

@@ -1,5 +1,3 @@
-import * as dotenv from "dotenv";
-
 import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
@@ -8,7 +6,7 @@ import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "hardhat-deploy";
 
-dotenv.config();
+require("dotenv").config();
 
 const {
   MNEMONIC = "test test test test test test test test test test test fake",
