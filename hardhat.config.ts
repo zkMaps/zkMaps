@@ -60,7 +60,7 @@ const config: HardhatUserConfig = {
       accounts: testAccounts,
     },
     polygon: {
-      url: "https://rpc-mainnet.matic.today",
+      url: "https://polygon-rpc.com",
       chainId: 137,
       accounts: {
         mnemonic: MNEMONIC,
