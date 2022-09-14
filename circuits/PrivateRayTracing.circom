@@ -4,7 +4,7 @@ include "./PointInPolygon.circom";
 include "../node_modules/circomlib/circuits/pedersen.circom";
 
 
-template FullRayTracing(n, grid_bits) {
+template parallel FullRayTracing(n, grid_bits) {
     signal input point[2];
     signal input polygon[n][2];
     signal output polygonHash[2];
@@ -34,4 +34,4 @@ template FullRayTracing(n, grid_bits) {
     polygonHash[1] <== hasher.out[1];
 }
 
-component main = FullRayTracing(6, 32);
+component main = FullRayTracing(10, 27);
