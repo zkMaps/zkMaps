@@ -19,6 +19,6 @@ node ".build/$1/$1_js/generate_witness.js" ".build/$1/$1_js/$1.wasm" "$1_input.j
 echo "Witness built"
 
 # Create the trusted setup
-snarkjs plonk setup ".build/$1/$1.r1cs" ./ptau/powersOfTau28_hez_final_18.ptau ".build/$1/$1_0001.zkey" || { echo 'ptau failed' ; exit 1; }
+snarkjs plonk setup ".build/$1/$1.r1cs" "./ptau/powersOfTau28_hez_final_$2.ptau" ".build/$1/$1_0001.zkey" || { echo 'ptau failed' ; exit 1; }
 snarkjs zkey export verificationkey ".build/$1/$1_0001.zkey" ".build/$1/verification_key.json" || { echo 'ptau failed' ; exit 1; }
 echo "zkey exported"
