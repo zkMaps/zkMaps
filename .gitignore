@@ -8,7 +8,10 @@ typechain
 cache
 artifacts
 
+
 circuits/.build
+circuits/ptau/powersOfTau28_hez_final_18.ptau
+circuits/ptau/powersOfTau28_hez_final_17.ptau
 .DS_Store
 .DS_Store*
 

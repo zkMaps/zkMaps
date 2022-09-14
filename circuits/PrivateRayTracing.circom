@@ -9,14 +9,12 @@ template FullRayTracing(n, grid_bits) {
     signal input polygon[n][2];
     signal output polygonHash[2];
 
-    // Create circuits to check that the polygon is simple and that the point is in the polygon
-    component sp = SimplePolygon(n, grid_bits);
+    // Create circuit to check that the point is in the polygon
     component rt = RayTracing(n, grid_bits);
 
     // feed the polygon into both sub circuits
     for (var i = 0; i < n; i++) {
         for (var j = 0; j < 2; j++) {
-            sp.polygon[i][j] <== polygon[i][j];
             rt.polygon[i][j] <== polygon[i][j];
         }
     }
@@ -25,7 +23,6 @@ template FullRayTracing(n, grid_bits) {
 
     // Make sure both sub circuits output true
     rt.out === 1;
-    sp.out === 1;
 
     // hash the polygon to ensure it matches the provided value
     component hasher = Pedersen(n*2);
@@ -37,4 +34,4 @@ template FullRayTracing(n, grid_bits) {
     polygonHash[1] <== hasher.out[1];
 }
 
-component main = FullRayTracing(4, 32);
+component main = FullRayTracing(6, 32);
