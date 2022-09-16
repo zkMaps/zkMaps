@@ -1,7 +1,11 @@
-# zkMaps
+# zkMaps 
+
+📍🗺️ | ⛓️ | 🔏
 
 zkMaps is a tool to verify if a user is within a certain geographic area without giving away their exact location. 
 This repository is composed of the circuits which enable the deployment of a verifier contract and the creation of the location proof by the end user. 
+
+You can check our [Dune](https://dune.com/zkmaps/zkmaps) dashboard. 
 
 ## Roadmap
 https://shrouded-fruitadens-1ef.notion.site/ZKmaps-roadmap-epics-18196ee96b4f4a2982fa1ec05f1c920e
@@ -46,8 +50,11 @@ You will be able to access ABI and contract address from `deployments/<NETWORK>/
 
 ## Contracts details
 ### Private Zones 
+- VerifierRayTracing6  `polygon` [0x0Eb82353271c162256b15BA540b10303F209F636](https://polygonscan.com/address/0x0Eb82353271c162256b15BA540b10303F209F636)
 
 ### Public Zones 
+- VerifierRayTracing6  `polygon` [0x97006Df5D736EA002a768245dfD289B648bbE610](https://polygonscan.com/address/0x97006Df5D736EA002a768245dfD289B648bbE610)
+
 - VerifierRayTracing6  `mumbai` [0x0a23af15ce2642689aF312B8A570534731285E83](https://mumbai.polygonscan.com/address/0x0a23af15ce2642689aF312B8A570534731285E83)
 
 
