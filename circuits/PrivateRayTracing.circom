@@ -7,7 +7,6 @@ include "../node_modules/circomlib/circuits/pedersen.circom";
 template FullRayTracing(n, grid_bits) {
     signal input point[2];
     signal input polygon[n][2];
-    // signal input pedersenHash[2];
     signal output polygonHash[2];
 
     // Create circuits to check that the polygon is simple and that the point is in the polygon
@@ -34,10 +33,6 @@ template FullRayTracing(n, grid_bits) {
         hasher.in[i*2] <== polygon[i][0];
         hasher.in[i*2+1] <== polygon[i][1];
     }
-
-    // Make sure hashes aren't faked
-    // pedersenHash[0] === hasher.out[0];
-    // pedersenHash[1] === hasher.out[1];
 
     polygonHash[0] <== hasher.out[0];
     polygonHash[1] <== hasher.out[1];
