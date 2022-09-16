@@ -53,7 +53,9 @@ You will be able to access ABI and contract address from `deployments/<NETWORK>/
 - VerifierRayTracing6  `polygon` [0x0Eb82353271c162256b15BA540b10303F209F636](https://polygonscan.com/address/0x0Eb82353271c162256b15BA540b10303F209F636)
 
 ### Public Zones 
+- VerifierRayTracing4  `polygon` [0xc53a2E55031F3BbE8ba9fB136F1b84bB5Af1CDe9](https://polygonscan.com/address/0xc53a2E55031F3BbE8ba9fB136F1b84bB5Af1CDe9)
 - VerifierRayTracing6  `polygon` [0x97006Df5D736EA002a768245dfD289B648bbE610](https://polygonscan.com/address/0x97006Df5D736EA002a768245dfD289B648bbE610)
+- VerifierRayTracing10  `polygon` [0x9d567902eFbceEf419edAC5aa556dDA545A71E68](https://polygonscan.com/address/0x9d567902eFbceEf419edAC5aa556dDA545A71E68)
 
 - VerifierRayTracing6  `mumbai` [0x0a23af15ce2642689aF312B8A570534731285E83](https://mumbai.polygonscan.com/address/0x0a23af15ce2642689aF312B8A570534731285E83)
 
