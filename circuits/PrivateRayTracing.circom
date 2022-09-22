@@ -24,17 +24,16 @@ template FullRayTracing(n, grid_bits) {
     rt.point[1] <== point[1];
 
     // Make sure both sub circuits output true
-    rt.out === 1;
     sp.out === 1;
+    rt.out === 1;
 
-    // hash the polygon to ensure it matches the provided value
+    // hash the polygon to provide an identifier that keeps the polygon private
     component hasher = Pedersen(n*2);
     for (var i = 0; i < n; i++) {
         hasher.in[i*2] <== polygon[i][0];
         hasher.in[i*2+1] <== polygon[i][1];
     }
+
     polygonHash[0] <== hasher.out[0];
     polygonHash[1] <== hasher.out[1];
 }
-
-component main = FullRayTracing(4, 32);
