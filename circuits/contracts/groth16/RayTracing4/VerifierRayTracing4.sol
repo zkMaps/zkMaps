@@ -163,9 +163,7 @@ library Pairing {
 }
 contract VerifierRayTracing4 {
     using Pairing for *;
-
-    event IsVerified(bool indexed isVerifie, address indexed user, uint256[9] indexed input);
-
+    event IsVerified(bool indexed isVerified, address indexed user, uint256[9] indexed input);
     struct VerifyingKey {
         Pairing.G1Point alfa1;
         Pairing.G2Point beta2;
