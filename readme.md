@@ -44,19 +44,21 @@ D. Ultimately run the command below. Make sure to do so from the root directory.
 
 ```hh deploy --network mumbai```
 
+You might need to set up a MNEMONIC with funds at `hardhat.config.ts`
+
 
 
 You will be able to access ABI and contract address from `deployments/<NETWORK>/Verifier<CIRCUIT-NAME>.json`. This information will be needed by the client to parse data from the contract.
 
 ## Contracts details
 ### Private Zones 
-- VerifierRayTracing6  `polygon` [0x0Eb82353271c162256b15BA540b10303F209F636](https://polygonscan.com/address/0x0Eb82353271c162256b15BA540b10303F209F636)
+- VerifierRayTracing4  `polygon` [0xBA635a7134599D4d36aBe206b15c7dA0D86F31F9](https://polygonscan.com/address/0xBA635a7134599D4d36aBe206b15c7dA0D86F31F9)
+- VerifierRayTracing6  `polygon` [0x43aE7AeE4BCcD7dc9c89a9C86Bb3AE1DFbbBC787](https://polygonscan.com/address/0x43aE7AeE4BCcD7dc9c89a9C86Bb3AE1DFbbBC787)
+- VerifierRayTracing10  `polygon` [0x78842c057FCBF2d91d4301c8e4ac1846053134F2](https://polygonscan.com/address/0x78842c057FCBF2d91d4301c8e4ac1846053134F2)
 
 ### Public Zones 
-- VerifierRayTracing4  `polygon` [0xc53a2E55031F3BbE8ba9fB136F1b84bB5Af1CDe9](https://polygonscan.com/address/0xc53a2E55031F3BbE8ba9fB136F1b84bB5Af1CDe9)
-- VerifierRayTracing6  `polygon` [0x97006Df5D736EA002a768245dfD289B648bbE610](https://polygonscan.com/address/0x97006Df5D736EA002a768245dfD289B648bbE610)
-- VerifierRayTracing10  `polygon` [0x9d567902eFbceEf419edAC5aa556dDA545A71E68](https://polygonscan.com/address/0x9d567902eFbceEf419edAC5aa556dDA545A71E68)
+- VerifierRayTracing4  `polygon` [0x8B39C811c9E768fa382D5e008054A9217121a9B3](https://polygonscan.com/address/0x8B39C811c9E768fa382D5e008054A9217121a9B3)
+- VerifierRayTracing6  `polygon` [0xe51A23ECf62CE27c3a3CEAd5C1F0D74d26D1c0A0](https://polygonscan.com/address/0xe51A23ECf62CE27c3a3CEAd5C1F0D74d26D1c0A0)
+- VerifierRayTracing10  `polygon` [0x30b347D381D349792A5F6f55Eb912Ae0B4C017b4](https://polygonscan.com/address/0x30b347D381D349792A5F6f55Eb912Ae0B4C017b4)
 
 - VerifierRayTracing6  `mumbai` [0x0a23af15ce2642689aF312B8A570534731285E83](https://mumbai.polygonscan.com/address/0x0a23af15ce2642689aF312B8A570534731285E83)
-
-
